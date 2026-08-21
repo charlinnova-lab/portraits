@@ -1,0 +1,230 @@
+/* =========================================
+   BASE
+========================================= */
+
+* {
+    box-sizing: border-box;
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+body {
+    margin: 0;
+    padding: 0;
+    background: #f5f3ee;
+    color: #333;
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+main {
+    width: min(1400px, 92%);
+    margin: 0 auto;
+    padding: 60px 0 80px;
+}
+
+
+/* =========================================
+   INTRO
+========================================= */
+
+h1 {
+    margin: 0;
+    font-size: clamp(38px, 5vw, 72px);
+    line-height: 1.05;
+    font-weight: 800;
+}
+
+.intro {
+    max-width: 800px;
+    margin: 24px 0 0;
+    font-size: clamp(18px, 2vw, 24px);
+    line-height: 1.5;
+}
+
+
+/* =========================================
+   GALERIE
+========================================= */
+
+#gallery {
+    margin-top: 70px;
+
+    display: grid;
+    grid-template-columns: repeat(
+        auto-fit,
+        minmax(280px, 1fr)
+    );
+
+    gap: 28px;
+}
+
+
+/* =========================================
+   CARTE PORTRAIT
+========================================= */
+
+.portrait-card {
+    background: white;
+
+    border-radius: 28px;
+
+    overflow: hidden;
+
+    box-shadow:
+        0 10px 30px rgba(0, 0, 0, 0.08);
+
+    cursor: pointer;
+
+    transition:
+        transform 0.25s ease,
+        box-shadow 0.25s ease;
+}
+
+.portrait-card:hover {
+    transform: translateY(-6px);
+
+    box-shadow:
+        0 18px 40px rgba(0, 0, 0, 0.13);
+}
+
+
+/* =========================================
+   IMAGE
+========================================= */
+
+.portrait-image {
+    width: 100%;
+    aspect-ratio: 16 / 10;
+
+    object-fit: cover;
+
+    display: block;
+}
+
+
+/* =========================================
+   CONTENU DE LA CARTE
+========================================= */
+
+.portrait-content {
+    padding: 24px;
+}
+
+.portrait-title {
+    margin: 0;
+
+    font-size: 25px;
+    line-height: 1.15;
+
+    font-weight: 800;
+}
+
+.portrait-tagline {
+    margin: 12px 0 0;
+
+    font-size: 17px;
+    line-height: 1.4;
+
+    font-weight: 700;
+    font-style: italic;
+}
+
+
+/* =========================================
+   PASTILLE / CHAPITRE
+========================================= */
+
+.chapter-badge {
+    display: inline-flex;
+
+    align-items: center;
+    justify-content: center;
+
+    min-height: 42px;
+
+    padding: 9px 16px;
+
+    margin-bottom: 18px;
+
+    border-radius: 14px;
+
+    font-size: 14px;
+    font-weight: 700;
+
+    color: #222;
+}
+
+
+/* =========================================
+   COULEURS DES CATÉGORIES
+========================================= */
+
+.category-germe {
+    background: #FB6F92;
+}
+
+.category-grandit {
+    background: #FDC500;
+}
+
+.category-forme {
+    background: #9BC045;
+}
+
+.category-solution {
+    background: #23C0F1;
+}
+
+.category-deploie {
+    background: #E8873A;
+}
+
+
+/* =========================================
+   ÉTAT DE CHARGEMENT
+========================================= */
+
+.loading {
+    font-size: 20px;
+    font-weight: 600;
+}
+
+
+/* =========================================
+   ERREUR
+========================================= */
+
+.error {
+    padding: 30px;
+
+    background: white;
+
+    border-radius: 20px;
+
+    color: #a33;
+
+    font-weight: 600;
+}
+
+
+/* =========================================
+   MOBILE
+========================================= */
+
+@media (max-width: 700px) {
+
+    main {
+        width: 90%;
+        padding-top: 40px;
+    }
+
+    #gallery {
+        grid-template-columns: 1fr;
+    }
+
+    .portrait-card {
+        border-radius: 22px;
+    }
+}
