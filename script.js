@@ -1,15 +1,16 @@
 /* =========================================================
    GALERIE — L'INNOVATION, UNE HISTOIRE COLLECTIVE
    innov'a (c) Charlotte Piau
+
    Création : 24 août 2026
-   Last Modification
+   Last Modification : 24 août 2026
 
    Ce fichier :
 
    1. récupère les portraits depuis Cloudflare
    2. affiche les cartes
    3. gère les catégories et leurs couleurs
-   4. ouvre une grande interview
+   4. ouvre une interview dans une sidebar
    5. permet de revenir à la galerie
 
    IMPORTANT :
@@ -142,6 +143,16 @@ async function chargerPortraits() {
         document.getElementById("gallery");
 
 
+    if (!gallery) {
+
+        console.error(
+            "Élément #gallery introuvable."
+        );
+
+        return;
+    }
+
+
     gallery.innerHTML = `
         <div class="loading">
             Chargement des portraits…
@@ -209,6 +220,12 @@ function afficherPortraits(portraits) {
         document.getElementById("gallery");
 
 
+    if (!gallery) {
+
+        return;
+    }
+
+
     gallery.innerHTML = "";
 
 
@@ -252,7 +269,7 @@ function afficherPortraits(portraits) {
 
 
 /* =========================================================
-   7. CRÉER UNE CARTE
+   7. CRÉER UNE CARTE PORTRAIT
 ========================================================= */
 
 function creerCartePortrait(record) {
@@ -299,6 +316,23 @@ function creerCartePortrait(record) {
         "portrait-card";
 
 
+    /*
+       Accessibilité :
+       la carte devient cliquable au clavier.
+    */
+
+    card.setAttribute(
+        "tabindex",
+        "0"
+    );
+
+
+    card.setAttribute(
+        "role",
+        "button"
+    );
+
+
     /* -----------------------------------------------------
        IMAGE
     ----------------------------------------------------- */
@@ -342,7 +376,7 @@ function creerCartePortrait(record) {
 
 
     /* -----------------------------------------------------
-       PASTILLE
+       PASTILLE / CHAPITRE
     ----------------------------------------------------- */
 
     const badge =
@@ -408,8 +442,6 @@ function creerCartePortrait(record) {
 
     /* -----------------------------------------------------
        CLIC
-       
-       Maintenant le clic ouvre la grande interview.
     ----------------------------------------------------- */
 
     card.addEventListener(
@@ -417,6 +449,27 @@ function creerCartePortrait(record) {
         () => {
 
             ouvrirInterview(record);
+        }
+    );
+
+
+    /* -----------------------------------------------------
+       CLAVIER
+    ----------------------------------------------------- */
+
+    card.addEventListener(
+        "keydown",
+        event => {
+
+            if (
+                event.key === "Enter" ||
+                event.key === " "
+            ) {
+
+                event.preventDefault();
+
+                ouvrirInterview(record);
+            }
         }
     );
 
@@ -449,8 +502,22 @@ function ouvrirInterview(record) {
         );
 
 
+    if (
+        !gallery ||
+        !detail ||
+        !detailContent
+    ) {
+
+        console.error(
+            "Éléments nécessaires à la sidebar introuvables."
+        );
+
+        return;
+    }
+
+
     /* -----------------------------------------------------
-       Récupération des données
+       RÉCUPÉRATION DES DONNÉES
     ----------------------------------------------------- */
 
     const structure =
@@ -500,10 +567,16 @@ function ouvrirInterview(record) {
         ] || "";
 
 
+    /*
+       Compatibilité avec les deux noms possibles
+       du champ Airtable.
+    */
+
     const photoCredit =
-        fields[
-            "Photo"
-        ] || "";
+        fields["Photo"] ||
+        fields["Photo credits"] ||
+        fields["Photo Credits"] ||
+        "";
 
 
     const addedInfos =
@@ -526,15 +599,15 @@ function ouvrirInterview(record) {
 
 
     /* -----------------------------------------------------
-       Construction de l'interview
+       CONSTRUCTION DE L'INTERVIEW
     ----------------------------------------------------- */
 
     detailContent.innerHTML = "";
 
 
-    /* -----------------------------------------------------
+    /* =====================================================
        EN-TÊTE
-    ----------------------------------------------------- */
+    ===================================================== */
 
     const header =
         document.createElement("header");
@@ -611,9 +684,9 @@ function ouvrirInterview(record) {
     );
 
 
-    /* -----------------------------------------------------
+    /* =====================================================
        GRANDE IMAGE
-    ----------------------------------------------------- */
+    ===================================================== */
 
     if (imageURL) {
 
@@ -641,6 +714,10 @@ function ouvrirInterview(record) {
             structure;
 
 
+        image.loading =
+            "eager";
+
+
         imageWrapper.appendChild(
             image
         );
@@ -652,9 +729,9 @@ function ouvrirInterview(record) {
     }
 
 
-    /* -----------------------------------------------------
+    /* =====================================================
        CONTENU DES 4 PARTIES
-    ----------------------------------------------------- */
+    ===================================================== */
 
     const interviewContent =
         document.createElement("div");
@@ -692,9 +769,9 @@ function ouvrirInterview(record) {
     );
 
 
-    /* -----------------------------------------------------
+    /* =====================================================
        PERSONNE INTERVIEWÉE
-    ----------------------------------------------------- */
+    ===================================================== */
 
     if (interviewPerson) {
 
@@ -716,9 +793,9 @@ function ouvrirInterview(record) {
     }
 
 
-    /* -----------------------------------------------------
+    /* =====================================================
        CRÉDIT PHOTO
-    ----------------------------------------------------- */
+    ===================================================== */
 
     if (photoCredit) {
 
@@ -740,9 +817,9 @@ function ouvrirInterview(record) {
     }
 
 
-    /* -----------------------------------------------------
+    /* =====================================================
        RESSOURCES
-    ----------------------------------------------------- */
+    ===================================================== */
 
     if (addedInfos) {
 
@@ -776,15 +853,35 @@ function ouvrirInterview(record) {
     );
 
 
-    /* -----------------------------------------------------
-       AFFICHAGE
-    ----------------------------------------------------- */
+    /* =====================================================
+       AFFICHAGE DE LA SIDEBAR
+    ===================================================== */
 
-    gallery.hidden = false;
+    /*
+       IMPORTANT :
 
-detail.hidden = false;
+       La galerie reste visible derrière.
 
-document.body.classList.add("detail-open");
+       La sidebar est affichée au-dessus grâce
+       à position: fixed et z-index: 1000.
+
+       Le fond sombre est activé par :
+       body.detail-open::before
+    */
+
+    gallery.hidden =
+        false;
+
+
+    detail.hidden =
+        false;
+
+
+    document.body.classList.add(
+        "detail-open"
+    );
+
+
     /*
        On remonte en haut de l'iframe.
     */
@@ -811,7 +908,11 @@ function ajouterSectionInterview(
        on n'affiche pas la section.
     */
 
-    if (!texte) {
+    if (
+        texte === null ||
+        texte === undefined ||
+        String(texte).trim() === ""
+    ) {
 
         return;
     }
@@ -879,11 +980,33 @@ function revenirGalerie() {
         document.getElementById("detail");
 
 
-   detail.hidden = true;
+    if (
+        !gallery ||
+        !detail
+    ) {
 
-gallery.hidden = false;
+        return;
+    }
 
-document.body.classList.remove("detail-open");
+
+    /*
+       On ferme uniquement la sidebar.
+
+       La galerie n'a jamais été cachée,
+       mais on force son affichage par sécurité.
+    */
+
+    detail.hidden =
+        true;
+
+
+    gallery.hidden =
+        false;
+
+
+    document.body.classList.remove(
+        "detail-open"
+    );
 
 
     window.scrollTo({
@@ -894,50 +1017,63 @@ document.body.classList.remove("detail-open");
 
 
 /* =========================================================
-   11. BOUTON RETOUR
+   11. FERMER LA SIDEBAR AVEC ESC
 ========================================================= */
 
-document
-    .getElementById("back-button")
-    .addEventListener(
-        "click",
-        revenirGalerie
-    );
+document.addEventListener(
+    "keydown",
+    event => {
+
+        if (
+            event.key === "Escape"
+        ) {
+
+            const detail =
+                document.getElementById(
+                    "detail"
+                );
+
+
+            if (
+                detail &&
+                !detail.hidden
+            ) {
+
+                revenirGalerie();
+            }
+        }
+    }
+);
+
 
 /* =========================================================
-   SIDEBAR MOBILE
+   12. BOUTON RETOUR
 ========================================================= */
 
-#detail {
+document.addEventListener(
+    "DOMContentLoaded",
+    () => {
 
-    width: 100vw;
-
-    padding:
-        30px 25px 50px;
-}
-
-
-.detail-title {
-
-    font-size: 38px;
-}
+        const backButton =
+            document.getElementById(
+                "back-button"
+            );
 
 
-.detail-image-wrapper {
+        if (backButton) {
 
-    margin-top: 25px;
+            backButton.addEventListener(
+                "click",
+                revenirGalerie
+            );
+        }
 
-    border-radius: 18px;
-}
+    }
+);
 
-
-.detail-image {
-
-    max-height: 400px;
-}
 
 /* =========================================================
-   12. LANCEMENT
+   13. LANCEMENT
 ========================================================= */
 
 document.addEventListener(
