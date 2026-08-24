@@ -158,7 +158,36 @@ main {
     color: #555;
 }
 
+/* =========================================================
+   FLÈCHE DES PORTRAITS
+========================================================= */
 
+.card-arrow {
+
+    display: block;
+
+    margin-top: 12px;
+
+    margin-left: auto;
+
+    font-size: 24px;
+
+    font-weight: 400;
+
+    line-height: 1;
+
+    color: #253081;
+
+    transition:
+        transform 0.2s ease;
+}
+
+
+.portrait-card:hover .card-arrow {
+
+    transform:
+        translate(4px, -4px);
+}
 /* =========================================================
    7. PASTILLE / CHAPITRE
 ========================================================= */
@@ -355,10 +384,9 @@ body.detail-open::before {
     align-items: center;
 
     border: none;
-   background: #253081;
-   
- border: none;
-   
+
+    background: #253081;
+
     padding: 10px 16px;
 
     margin-bottom: 30px;
@@ -386,14 +414,15 @@ body.detail-open::before {
 
 
 .back-button:hover {
-   background: #1d276b;
+
+    background: #1d276b;
+
     transform:
         translateX(-4px);
 
     box-shadow:
         0 6px 20px rgba(0, 0, 0, 0.12);
 }
-
 
 /* =========================================================
    14. EN-TÊTE DE L'INTERVIEW
