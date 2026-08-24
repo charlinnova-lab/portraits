@@ -1,52 +1,20 @@
 /* =========================================================
    GALERIE — L'INNOVATION, UNE HISTOIRE COLLECTIVE
    innov'a (c) Charlotte Piau
-
-   Création : 24 août 2026
-   Last Modification : 24 août 2026
-   Objet : interconnexion avec la frise
-   
 ========================================================= */
 
-/* =========================================================
-   1. CONFIGURATION & VARIABLES GLOBALES
-========================================================= */
-
+// VÉRIFIE BIEN CETTE URL : ajuste s'il faut "portraitsexpo" avec un "r"
 const API_URL = "https://portaitsexpo.charlottepiau-innova.workers.dev";
 
-// Stocke la totalité des cartes reçues d'Airtable
 let allPortraits = [];
 
-/* =========================================================
-   2. CATÉGORIES
-========================================================= */
-
 const CATEGORIES = {
-    "Là où les idées germent : écoles & laboratoires": {
-        label: "L’idée germe",
-        className: "category-germe"
-    },
-    "Là où l’idée grandit et est testées : centres techniques & dispositifs d’accompagnement": {
-        label: "L’idée grandit",
-        className: "category-grandit"
-    },
-    "Là où l’idée prend forme : start-up": {
-        label: "L’idée prend forme",
-        className: "category-forme"
-    },
-    "Là où l’idée se transforme en solution : entreprises": {
-        label: "L’idée devient une solution",
-        className: "category-solution"
-    },
-    "Là où l’idée se déploit : dynamiques collectives": {
-        label: "L’idée se déploie",
-        className: "category-deploie"
-    }
+    "Là où les idées germent : écoles & laboratoires": { label: "L’idée germe", className: "category-germe" },
+    "Là où l’idée grandit et est testées : centres techniques & dispositifs d’accompagnement": { label: "L’idée grandit", className: "category-grandit" },
+    "Là où l’idée prend forme : start-up": { label: "L’idée prend forme", className: "category-forme" },
+    "Là où l’idée se transforme en solution : entreprises": { label: "L’idée devient une solution", className: "category-solution" },
+    "Là où l’idée se déploit : dynamiques collectives": { label: "L’idée se déploie", className: "category-deploie" }
 };
-
-/* =========================================================
-   3. ÉCHAPPEMENT + FORMATAGE DU TEXTE
-========================================================= */
 
 function escapeHTML(value) {
     if (value === null || value === undefined) return "";
@@ -67,19 +35,11 @@ function formatText(value) {
         .replace(/\r?\n/g, "<br>");
 }
 
-/* =========================================================
-   4. RÉCUPÉRER L'IMAGE AIRTABLE
-========================================================= */
-
 function getImageURL(fields) {
     const imageField = fields["Visuel"];
     if (!Array.isArray(imageField) || imageField.length === 0) return "";
     return imageField[0]?.thumbnails?.large?.url || imageField[0]?.url || "";
 }
-
-/* =========================================================
-   5. CHARGEMENT DES PORTRAITS
-========================================================= */
 
 async function chargerPortraits() {
     const gallery = document.getElementById("gallery");
@@ -92,28 +52,21 @@ async function chargerPortraits() {
         if (!response.ok) throw new Error(`Erreur du serveur : ${response.status}`);
 
         const data = await response.json();
-        allPortraits = data.records || [];
+        allPortraits = data.records || (Array.isArray(data) ? data : []);
 
-        // Vérifie si un filtre est présent dans l'URL (?cat=germe)
         verifierFiltreUrl();
-
-        // Filtre et affiche les cartes
         filtrerEtAfficher();
 
     } catch (error) {
         console.error("Erreur lors du chargement :", error);
         gallery.innerHTML = `
-            <div class="error">
+            <div class="error" style="text-align:center; padding: 30px; color: #dc2626;">
                 Impossible de charger les portraits.<br>
-                Veuillez réessayer dans quelques instants.
+                <small>${escapeHTML(error.message)}</small>
             </div>
         `;
     }
 }
-
-/* =========================================================
-   6. LOGIQUE DE FILTRAGE ET RECHERCHE
-========================================================= */
 
 function filtrerEtAfficher() {
     const searchInput = document.getElementById("searchInput");
@@ -123,16 +76,14 @@ function filtrerEtAfficher() {
     const selectedCat = activeBtn ? activeBtn.getAttribute("data-filter") : "all";
 
     const portraitsFiltres = allPortraits.filter(record => {
-        const fields = record.fields || {};
+        const fields = record.fields || record;
 
-        // Recherche textuelle globale
         const contentText = JSON.stringify(fields).toLowerCase();
         const matchesSearch = !searchVal || contentText.includes(searchVal);
 
-        // Filtre de catégorie
-        let rawCategory = fields["Category"] || fields["Catégory"] || "";
+        let rawCategory = fields["Category"] || fields["Catégory"] || fields["category"] || "";
         if (Array.isArray(rawCategory)) rawCategory = rawCategory.join(" ");
-        const category = rawCategory.toLowerCase();
+        const category = String(rawCategory).toLowerCase();
 
         let matchesCat = false;
         if (selectedCat === "all") matchesCat = true;
@@ -161,24 +112,20 @@ function verifierFiltreUrl() {
     }
 }
 
-/* =========================================================
-   7. AFFICHER LA GALERIE
-========================================================= */
-
 function afficherPortraits(portraits) {
     const gallery = document.getElementById("gallery");
     if (!gallery) return;
 
     gallery.innerHTML = "";
 
-    if (portraits.length === 0) {
-        gallery.innerHTML = `<div class="error" style="background:transparent; text-align:center;">Aucun portrait ne correspond à votre recherche.</div>`;
+    if (!portraits || portraits.length === 0) {
+        gallery.innerHTML = `<div class="error" style="text-align:center; padding: 40px; color: #64748b;">Aucun portrait ne correspond à votre recherche.</div>`;
         return;
     }
 
     portraits.sort((a, b) => {
-        const panelA = Number(a.fields?.["Panel ID"]) || 9999;
-        const panelB = Number(b.fields?.["Panel ID"]) || 9999;
+        const panelA = Number((a.fields || a)["Panel ID"]) || 9999;
+        const panelB = Number((b.fields || b)["Panel ID"]) || 9999;
         return panelA - panelB;
     });
 
@@ -188,12 +135,8 @@ function afficherPortraits(portraits) {
     });
 }
 
-/* =========================================================
-   8. CRÉER UNE CARTE PORTRAIT
-========================================================= */
-
 function creerCartePortrait(record) {
-    const fields = record.fields || {};
+    const fields = record.fields || record;
     const structure = fields["Structure"] || "Structure";
     const category = fields["Category"] || fields["Catégory"] || "";
     const tagline = fields["Un mot pour vous résumer ?"] || "";
@@ -203,7 +146,6 @@ function creerCartePortrait(record) {
     const card = document.createElement("article");
     card.className = "portrait-card";
     card.setAttribute("tabindex", "0");
-    card.setAttribute("role", "button");
 
     if (imageURL) {
         const image = document.createElement("img");
@@ -236,29 +178,17 @@ function creerCartePortrait(record) {
 
     const arrow = document.createElement("span");
     arrow.className = "card-arrow";
-    arrow.setAttribute("aria-hidden", "true");
     arrow.textContent = "↗";
     content.appendChild(arrow);
 
     card.appendChild(content);
 
     card.addEventListener("click", () => ouvrirInterview(record));
-    card.addEventListener("keydown", event => {
-        if (event.key === "Enter" || event.key === " ") {
-            event.preventDefault();
-            ouvrirInterview(record);
-        }
-    });
-
     return card;
 }
 
-/* =========================================================
-   9. OUVRIR UNE INTERVIEW
-========================================================= */
-
 function ouvrirInterview(record) {
-    const fields = record.fields || {};
+    const fields = record.fields || record;
     const gallery = document.getElementById("gallery");
     const detail = document.getElementById("detail");
     const detailContent = document.getElementById("detail-content");
@@ -311,7 +241,6 @@ function ouvrirInterview(record) {
         image.className = "detail-image";
         image.src = imageURL;
         image.alt = structure;
-        image.loading = "eager";
 
         imageWrapper.appendChild(image);
         detailContent.appendChild(imageWrapper);
@@ -342,10 +271,7 @@ function ouvrirInterview(record) {
     if (addedInfos) {
         const resources = document.createElement("div");
         resources.className = "detail-resources";
-        resources.innerHTML = `
-            <h2 class="detail-resources-title">Pour aller plus loin</h2>
-            <div>${escapeHTML(addedInfos)}</div>
-        `;
+        resources.innerHTML = `<h2 class="detail-resources-title">Pour aller plus loin</h2><div>${escapeHTML(addedInfos)}</div>`;
         interviewContent.appendChild(resources);
     }
 
@@ -358,12 +284,8 @@ function ouvrirInterview(record) {
     window.scrollTo({ top: 0, behavior: "smooth" });
 }
 
-/* =========================================================
-   10. AJOUTER UNE SECTION D'INTERVIEW
-========================================================= */
-
 function ajouterSectionInterview(container, titre, texte) {
-    if (texte === null || texte === undefined || String(texte).trim() === "") return;
+    if (!texte || String(texte).trim() === "") return;
 
     const section = document.createElement("section");
     section.className = "interview-section";
@@ -381,10 +303,6 @@ function ajouterSectionInterview(container, titre, texte) {
     container.appendChild(section);
 }
 
-/* =========================================================
-   11. RETOUR À LA GALERIE
-========================================================= */
-
 function revenirGalerie() {
     const gallery = document.getElementById("gallery");
     const detail = document.getElementById("detail");
@@ -398,26 +316,35 @@ function revenirGalerie() {
     window.scrollTo({ top: 0, behavior: "smooth" });
 }
 
-/* =========================================================
-   ÉCOUTE DU MESSAGE PROVENANT DE LA FRISE VIA WORDPRESS
-========================================================= */
-
+// ÉCOUTE DES MESSAGES POSTMESSAGE DE LA FRISE
 window.addEventListener('message', (event) => {
     if (event.data && event.data.type === 'FILTER_GALLERY') {
         const catKey = event.data.category;
-        
-        // Sélectionne le bouton de filtre correspondant
         const targetBtn = document.querySelector(`.filter-btn[data-filter="${catKey}"]`);
         
         if (targetBtn) {
-            // Désactive les autres boutons et active le bon
             document.querySelectorAll(".filter-btn").forEach(btn => btn.classList.remove("active"));
             targetBtn.classList.add("active");
-            
-            // Relance le filtrage
-            if (typeof filtrerEtAfficher === 'function') {
-                filtrerEtAfficher();
-            }
+            filtrerEtAfficher();
         }
     }
+});
+
+document.addEventListener("DOMContentLoaded", () => {
+    const backButton = document.getElementById("back-button");
+    if (backButton) backButton.addEventListener("click", revenirGalerie);
+
+    const searchInput = document.getElementById("searchInput");
+    if (searchInput) searchInput.addEventListener("input", filtrerEtAfficher);
+
+    const filterButtons = document.querySelectorAll(".filter-btn");
+    filterButtons.forEach(btn => {
+        btn.addEventListener("click", (e) => {
+            filterButtons.forEach(b => b.classList.remove("active"));
+            e.currentTarget.classList.add("active");
+            filtrerEtAfficher();
+        });
+    });
+
+    chargerPortraits();
 });
