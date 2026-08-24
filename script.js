@@ -75,7 +75,7 @@ const CATEGORIES = {
 
 
 /* =========================================================
-   3. ÉCHAPPEMENT HTML
+   3. ÉCHAPPEMENT + FORMATAGE DU TEXTE
 ========================================================= */
 
 function escapeHTML(value) {
@@ -87,7 +87,6 @@ function escapeHTML(value) {
 
         return "";
     }
-
 
     return String(value)
 
@@ -102,6 +101,28 @@ function escapeHTML(value) {
         .replace(/'/g, "&#039;");
 }
 
+
+/*
+   Transforme le Markdown simple **texte**
+   en véritable texte en gras.
+
+   Important :
+   On échappe d'abord le HTML pour éviter
+   qu'un contenu Airtable puisse injecter
+   du code HTML ou JavaScript.
+*/
+
+function formatText(value) {
+
+    const safeText =
+        escapeHTML(value);
+
+
+    return safeText.replace(
+        /\*\*(.+?)\*\*/g,
+        "<strong>$1</strong>"
+    );
+}
 
 /* =========================================================
    4. RÉCUPÉRER L'IMAGE AIRTABLE
@@ -946,8 +967,8 @@ function ajouterSectionInterview(
         "interview-text";
 
 
-    paragraph.textContent =
-        texte;
+    paragraph.innerHTML =
+    formatText(texte);
 
 
     section.appendChild(
