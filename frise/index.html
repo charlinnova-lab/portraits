@@ -210,44 +210,56 @@
     <script>
         const API_URL = "https://portaitsexpo.charlottepiau-innova.workers.dev";
 
-        async function updateCategoryCounts() {
-            try {
-                const response = await fetch(API_URL);
-                const data = await response.json();
-                
-                // Extrait les enregistrements peu importe le format de réponse
-                const items = data.records || (Array.isArray(data) ? data : []);
+       async function updateCategoryCounts() {
+    try {
+        const response = await fetch(API_URL);
+        const data = await response.json();
+        
+        const items = data.records || (Array.isArray(data) ? data : []);
+        const counts = { germe: 0, grandit: 0, forme: 0, solution: 0, deploie: 0 };
 
-                const counts = { germe: 0, grandit: 0, forme: 0, solution: 0, deploie: 0 };
+        items.forEach(item => {
+            const fields = item.fields || item;
+            
+            let rawCategory = fields["Category"] || fields["Catégory"] || fields["category"] || fields["Catégorie"] || "";
+            if (Array.isArray(rawCategory)) rawCategory = rawCategory.join(" ");
+            const category = String(rawCategory).toLowerCase();
 
-                items.forEach(item => {
-                    const fields = item.fields || item;
-                    
-                    // Récupère la catégorie sur toutes les variantes de nommage possibles
-                    let rawCategory = fields["Category"] || fields["Catégory"] || fields["category"] || fields["Catégorie"] || "";
-                    if (Array.isArray(rawCategory)) rawCategory = rawCategory.join(" ");
-                    const category = String(rawCategory).toLowerCase();
-
-                    if (category.includes("germent") || category.includes("ecoles") || category.includes("écoles") || category.includes("germe")) counts.germe++;
-                    else if (category.includes("grandit") || category.includes("centres techniques")) counts.grandit++;
-                    else if (category.includes("start-up") || category.includes("startup") || category.includes("forme")) counts.forme++;
-                    else if (category.includes("solution") || category.includes("entreprises")) counts.solution++;
-                    else if (category.includes("deploie") || category.includes("déploie") || category.includes("dynamiques collectives")) counts.deploie++;
-                });
-
-                // Mettre à jour l'affichage des chiffres
-                document.querySelectorAll('.idea-step').forEach(step => {
-                    const catKey = step.getAttribute('data-category');
-                    if (catKey && counts[catKey] !== undefined) {
-                        const countEl = step.querySelector('.count-value');
-                        if (countEl) countEl.textContent = counts[catKey];
-                    }
-                });
-
-            } catch (error) {
-                console.error("Erreur lors du calcul des catégories :", error);
+            // 01. GERME : Écoles, labos, germent
+            if (category.includes("germ") || category.includes("ecole") || category.includes("école")) {
+                counts.germe++;
             }
-        }
+            // 02. GRANDIT : Centres techniques, grandit
+            else if (category.includes("grandit") || category.includes("centre")) {
+                counts.grandit++;
+            }
+            // 03. FORME : Start-up
+            else if (category.includes("forme") || category.includes("start")) {
+                counts.forme++;
+            }
+            // 04. SOLUTION : Entreprises, solution
+            else if (category.includes("solution") || category.includes("entreprise")) {
+                counts.solution++;
+            }
+            // 05. DEPLOIE : Dynamiques collectives, déploie
+            else if (category.includes("deplo") || category.includes("déplo") || category.includes("collective")) {
+                counts.deploie++;
+            }
+        });
+
+        // Mise à jour de l'affichage des chiffres
+        document.querySelectorAll('.idea-step').forEach(step => {
+            const catKey = step.getAttribute('data-category');
+            if (catKey && counts[catKey] !== undefined) {
+                const countEl = step.querySelector('.count-value');
+                if (countEl) countEl.textContent = counts[catKey];
+            }
+        });
+
+    } catch (error) {
+        console.error("Erreur lors du calcul des catégories :", error);
+    }
+}
 
         // Lier l'événement de clic de manière indépendante pour garantir la transmission
         document.addEventListener("DOMContentLoaded", () => {
