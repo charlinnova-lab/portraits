@@ -36,6 +36,10 @@ body {
 }
 
 
+/* =========================================================
+   2. CONTENEUR PRINCIPAL
+========================================================= */
+
 main {
 
     width: min(1400px, 92%);
@@ -47,7 +51,7 @@ main {
 
 
 /* =========================================================
-   2. GALERIE
+   3. GALERIE
 ========================================================= */
 
 #gallery {
@@ -68,7 +72,7 @@ main {
 
 
 /* =========================================================
-   3. CARTE PORTRAIT
+   4. CARTE PORTRAIT
 ========================================================= */
 
 .portrait-card {
@@ -101,7 +105,7 @@ main {
 
 
 /* =========================================================
-   4. IMAGE DE LA CARTE
+   5. IMAGE DE LA CARTE
 ========================================================= */
 
 .portrait-image {
@@ -117,7 +121,7 @@ main {
 
 
 /* =========================================================
-   5. CONTENU DE LA CARTE
+   6. CONTENU DE LA CARTE
 ========================================================= */
 
 .portrait-content {
@@ -156,7 +160,7 @@ main {
 
 
 /* =========================================================
-   6. PASTILLE / CHAPITRE
+   7. PASTILLE / CHAPITRE
 ========================================================= */
 
 .chapter-badge {
@@ -184,46 +188,41 @@ main {
 
 
 /* =========================================================
-   7. COULEURS DES CATÉGORIES
+   8. COULEURS DES CATÉGORIES
 ========================================================= */
 
 .category-germe {
 
-    background:
-        #FB6F92;
+    background: #FB6F92;
 }
 
 
 .category-grandit {
 
-    background:
-        #FDC500;
+    background: #FDC500;
 }
 
 
 .category-forme {
 
-    background:
-        #9BC045;
+    background: #9BC045;
 }
 
 
 .category-solution {
 
-    background:
-        #23C0F1;
+    background: #23C0F1;
 }
 
 
 .category-deploie {
 
-    background:
-        #E8873A;
+    background: #E8873A;
 }
 
 
 /* =========================================================
-   8. CHARGEMENT
+   9. CHARGEMENT
 ========================================================= */
 
 .loading {
@@ -242,7 +241,7 @@ main {
 
 
 /* =========================================================
-   9. ERREUR
+   10. ERREUR
 ========================================================= */
 
 .error {
@@ -263,7 +262,7 @@ main {
 
 
 /* =========================================================
-   10. VUE DÉTAILLÉE — SIDEBAR
+   11. SIDEBAR — VUE DÉTAILLÉE
 ========================================================= */
 
 #detail {
@@ -283,7 +282,8 @@ main {
 
     overflow-y: auto;
 
-    padding: 45px 50px 60px;
+    padding:
+        45px 50px 60px;
 
     box-shadow:
         -12px 0 45px rgba(0, 0, 0, 0.18);
@@ -292,6 +292,10 @@ main {
         detailSlideIn 0.35s ease;
 }
 
+
+/* =========================================================
+   12. ANIMATION DE LA SIDEBAR
+========================================================= */
 
 @keyframes detailSlideIn {
 
@@ -312,8 +316,9 @@ main {
     }
 }
 
+
 /* =========================================================
-   10 BIS. FOND DERRIÈRE LA SIDEBAR
+   13. FOND SOMBRE DERRIÈRE LA SIDEBAR
 ========================================================= */
 
 body.detail-open::before {
@@ -332,8 +337,9 @@ body.detail-open::before {
     cursor: pointer;
 }
 
+
 /* =========================================================
-   11. BOUTON RETOUR
+   14. BOUTON RETOUR
 ========================================================= */
 
 .back-button {
@@ -352,7 +358,8 @@ body.detail-open::before {
 
     background: #ffffff;
 
-    padding: 10px 16px;
+    padding:
+        10px 16px;
 
     margin-bottom: 30px;
 
@@ -386,8 +393,9 @@ body.detail-open::before {
         0 6px 20px rgba(0, 0, 0, 0.12);
 }
 
+
 /* =========================================================
-   12. EN-TÊTE DE L'INTERVIEW
+   15. EN-TÊTE DE L'INTERVIEW
 ========================================================= */
 
 .detail-header {
@@ -397,7 +405,7 @@ body.detail-open::before {
 
 
 /* =========================================================
-   13. PASTILLE DÉTAIL
+   16. PASTILLE DÉTAIL
 ========================================================= */
 
 .detail-badge {
@@ -406,7 +414,8 @@ body.detail-open::before {
 
     align-items: center;
 
-    padding: 12px 20px;
+    padding:
+        12px 20px;
 
     border-radius: 16px;
 
@@ -421,7 +430,7 @@ body.detail-open::before {
 
 
 /* =========================================================
-   14. TITRE DE LA STRUCTURE
+   17. TITRE DE LA STRUCTURE
 ========================================================= */
 
 .detail-title {
@@ -430,7 +439,8 @@ body.detail-open::before {
 
     display: inline-block;
 
-    padding: 14px 22px;
+    padding:
+        14px 22px;
 
     border-radius: 18px;
 
@@ -449,7 +459,7 @@ body.detail-open::before {
 
 
 /* =========================================================
-   15. TAGLINE DE L'INTERVIEW
+   18. TAGLINE DE L'INTERVIEW
 ========================================================= */
 
 .detail-tagline {
@@ -458,7 +468,8 @@ body.detail-open::before {
 
     max-width: 800px;
 
-    margin: 30px auto 0;
+    margin:
+        30px auto 0;
 
     font-size:
         clamp(20px, 2vw, 27px);
@@ -476,14 +487,15 @@ body.detail-open::before {
 
 
 /* =========================================================
-   16. GRANDE IMAGE
+   19. GRANDE IMAGE
 ========================================================= */
 
 .detail-image-wrapper {
 
     width: 100%;
 
-    margin: 30px 0 45px;
+    margin:
+        30px 0 45px;
 
     border-radius: 24px;
 
@@ -507,8 +519,9 @@ body.detail-open::before {
     display: block;
 }
 
+
 /* =========================================================
-   17. CONTENU DE L'INTERVIEW
+   20. CONTENU DE L'INTERVIEW
 ========================================================= */
 
 .interview-content {
@@ -520,7 +533,7 @@ body.detail-open::before {
 
 
 /* =========================================================
-   18. BLOC D'INTERVIEW
+   21. BLOC D'INTERVIEW
 ========================================================= */
 
 .interview-section {
@@ -531,7 +544,8 @@ body.detail-open::before {
 
 .interview-section-title {
 
-    margin: 0 0 18px;
+    margin:
+        0 0 18px;
 
     font-size:
         clamp(24px, 3vw, 34px);
@@ -543,7 +557,7 @@ body.detail-open::before {
 
 
 /* =========================================================
-   19. TEXTE DE L'INTERVIEW
+   22. TEXTE DE L'INTERVIEW
 ========================================================= */
 
 .interview-text {
@@ -562,7 +576,7 @@ body.detail-open::before {
 
 
 /* =========================================================
-   20. PERSONNE INTERVIEWÉE
+   23. PERSONNE INTERVIEWÉE
 ========================================================= */
 
 .interview-person {
@@ -578,7 +592,7 @@ body.detail-open::before {
 
 
 /* =========================================================
-   21. RESSOURCES COMPLÉMENTAIRES
+   24. RESSOURCES COMPLÉMENTAIRES
 ========================================================= */
 
 .detail-resources {
@@ -595,7 +609,8 @@ body.detail-open::before {
 
 .detail-resources-title {
 
-    margin: 0 0 15px;
+    margin:
+        0 0 15px;
 
     font-size: 24px;
 
@@ -604,7 +619,7 @@ body.detail-open::before {
 
 
 /* =========================================================
-   22. CRÉDIT PHOTO
+   25. CRÉDIT PHOTO
 ========================================================= */
 
 .photo-credit {
@@ -618,18 +633,51 @@ body.detail-open::before {
 
 
 /* =========================================================
-   23. MOBILE
+   26. ÉTAT FOCUS — ACCESSIBILITÉ
+========================================================= */
+
+.portrait-card:focus-visible {
+
+    outline:
+        4px solid #111;
+
+    outline-offset:
+        4px;
+}
+
+
+.back-button:focus-visible {
+
+    outline:
+        3px solid #111;
+
+    outline-offset:
+        3px;
+}
+
+
+/* =========================================================
+   27. MOBILE
 ========================================================= */
 
 @media (max-width: 700px) {
+
+    /* -----------------------------------------
+       CONTENEUR
+    ----------------------------------------- */
 
     main {
 
         width: 90%;
 
-        padding-top: 30px;
+        padding:
+            30px 0 50px;
     }
 
+
+    /* -----------------------------------------
+       GALERIE
+    ----------------------------------------- */
 
     #gallery {
 
@@ -646,25 +694,168 @@ body.detail-open::before {
     }
 
 
-    .detail-title {
+    /* -----------------------------------------
+       CONTENU DES CARTES
+    ----------------------------------------- */
 
-        font-size: 42px;
+    .portrait-content {
 
-        padding: 12px 18px;
+        padding: 20px;
     }
 
+
+    .portrait-title {
+
+        font-size: 24px;
+    }
+
+
+    .portrait-tagline {
+
+        font-size: 16px;
+    }
+
+
+    /* -----------------------------------------
+       SIDEBAR
+    ----------------------------------------- */
+
+    #detail {
+
+        width: 100vw;
+
+        height: 100vh;
+
+        padding:
+            30px 25px 50px;
+    }
+
+
+    /* -----------------------------------------
+       TITRE
+    ----------------------------------------- */
+
+    .detail-title {
+
+        font-size: 38px;
+
+        padding:
+            12px 18px;
+    }
+
+
+    /* -----------------------------------------
+       IMAGE
+    ----------------------------------------- */
 
     .detail-image-wrapper {
 
-        margin-top: 30px;
+        margin-top: 25px;
 
-        border-radius: 20px;
+        border-radius: 18px;
     }
 
+
+    .detail-image {
+
+        max-height: 400px;
+    }
+
+
+    /* -----------------------------------------
+       INTERVIEW
+    ----------------------------------------- */
 
     .interview-section {
 
         margin-bottom: 40px;
     }
 
+
+    .interview-text {
+
+        text-align: left;
+
+        font-size: 17px;
+
+        line-height: 1.6;
+    }
+
+
+    /* -----------------------------------------
+       RESSOURCES
+    ----------------------------------------- */
+
+    .detail-resources {
+
+        padding: 22px;
+
+        border-radius: 18px;
+    }
+}
+
+
+/* =========================================================
+   28. PETITS ÉCRANS
+========================================================= */
+
+@media (max-width: 400px) {
+
+    #detail {
+
+        padding:
+            25px 20px 40px;
+    }
+
+
+    .detail-title {
+
+        font-size: 32px;
+    }
+
+
+    .detail-badge {
+
+        font-size: 14px;
+
+        padding:
+            10px 15px;
+    }
+
+
+    .detail-tagline {
+
+        font-size: 19px;
+    }
+
+
+    .interview-section-title {
+
+        font-size: 25px;
+    }
+}
+
+
+/* =========================================================
+   29. RÉDUCTION DES ANIMATIONS
+========================================================= */
+
+@media (prefers-reduced-motion: reduce) {
+
+    html {
+
+        scroll-behavior: auto;
+    }
+
+
+    .portrait-card {
+
+        transition: none;
+    }
+
+
+    #detail {
+
+        animation: none;
+    }
 }
