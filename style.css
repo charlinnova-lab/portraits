@@ -232,8 +232,11 @@ main {
         1 / -1;
 
     padding: 60px;
+
     text-align: center;
+
     font-size: 20px;
+
     font-weight: 600;
 }
 
@@ -277,12 +280,15 @@ main {
     from {
 
         opacity: 0;
+
         transform:
             translateY(15px);
     }
 
     to {
+
         opacity: 1;
+
         transform:
             translateY(0);
     }
@@ -294,15 +300,25 @@ main {
 ========================================================= */
 
 .back-button {
+
     border: none;
+
     background: transparent;
+
     padding: 10px 0;
+
     margin-bottom: 30px;
+
     font-family: inherit;
+
     font-size: 17px;
+
     font-weight: 700;
+
     color: #444;
+
     cursor: pointer;
+
     transition:
         transform 0.2s ease;
 }
@@ -354,15 +370,24 @@ main {
 ========================================================= */
 
 .detail-title {
+
     margin: 0;
+
     display: inline-block;
+
     padding: 15px 28px;
+
     border-radius: 20px;
+
     font-size:
         clamp(38px, 6vw, 76px);
+
     line-height: 1;
+
     font-weight: 900;
+
     color: #111;
+
     background:
         #FDC500;
 }
@@ -373,15 +398,24 @@ main {
 ========================================================= */
 
 .detail-tagline {
+
     width: 100%;
+
     max-width: 800px;
+
     margin: 30px auto 0;
+
     font-size:
         clamp(20px, 2vw, 27px);
+
     line-height: 1.35;
+
     font-weight: 700;
+
     font-style: italic;
+
     color: #555;
+
     text-align: center;
 }
 
@@ -391,20 +425,30 @@ main {
 ========================================================= */
 
 .detail-image-wrapper {
+
     width: 100%;
+
     margin: 45px 0 55px;
+
     border-radius: 30px;
+
     overflow: hidden;
+
     background: #ffffff;
+
     box-shadow:
         0 15px 45px rgba(0, 0, 0, 0.10);
 }
 
 
 .detail-image {
+
     width: 100%;
+
     max-height: 650px;
+
     object-fit: cover;
+
     display: block;
 }
 
@@ -414,7 +458,9 @@ main {
 ========================================================= */
 
 .interview-content {
+
     max-width: 950px;
+
     margin: 0 auto;
 }
 
@@ -424,15 +470,20 @@ main {
 ========================================================= */
 
 .interview-section {
+
     margin-bottom: 55px;
 }
 
 
 .interview-section-title {
+
     margin: 0 0 18px;
+
     font-size:
         clamp(24px, 3vw, 34px);
+
     line-height: 1.15;
+
     font-weight: 800;
 }
 
@@ -442,11 +493,16 @@ main {
 ========================================================= */
 
 .interview-text {
+
     margin: 0;
+
     font-size:
         clamp(17px, 1.6vw, 20px);
+
     line-height: 1.7;
+
     text-align: justify;
+
     color: #444;
 }
 
@@ -456,9 +512,13 @@ main {
 ========================================================= */
 
 .interview-person {
+
     margin-top: 15px;
+
     font-size: 16px;
+
     font-style: italic;
+
     color: #666;
 }
 
@@ -468,16 +528,23 @@ main {
 ========================================================= */
 
 .detail-resources {
+
     margin-top: 60px;
+
     padding: 30px;
+
     background: #ffffff;
+
     border-radius: 24px;
 }
 
 
 .detail-resources-title {
+
     margin: 0 0 15px;
+
     font-size: 24px;
+
     font-weight: 800;
 }
 
@@ -487,8 +554,11 @@ main {
 ========================================================= */
 
 .photo-credit {
+
     margin-top: 15px;
+
     font-size: 13px;
+
     color: #777;
 }
 
@@ -502,11 +572,13 @@ main {
     main {
 
         width: 90%;
+
         padding-top: 30px;
     }
 
 
     #gallery {
+
         grid-template-columns:
             1fr;
 
@@ -515,6 +587,7 @@ main {
 
 
     .portrait-card {
+
         border-radius: 22px;
     }
 
@@ -522,6 +595,7 @@ main {
     .detail-title {
 
         font-size: 42px;
+
         padding: 12px 18px;
     }
 
@@ -529,6 +603,7 @@ main {
     .detail-image-wrapper {
 
         margin-top: 30px;
+
         border-radius: 20px;
     }
 
