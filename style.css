@@ -355,8 +355,8 @@ body.detail-open::before {
     align-items: center;
 
     border: none;
-   background-color: #253081;
-    background: #ffffff;
+   background: #253081;
+   
  border: none;
    
     padding: 10px 16px;
@@ -371,7 +371,7 @@ body.detail-open::before {
 
     font-weight: 700;
 
-    color: #444;
+    color: #ffffff;
 
     cursor: pointer;
 
@@ -380,12 +380,13 @@ body.detail-open::before {
 
     transition:
         transform 0.2s ease,
-        box-shadow 0.2s ease;
+        box-shadow 0.2s ease,
+        background-color 0.2s ease;
 }
 
 
 .back-button:hover {
-
+   background: #1d276b;
     transform:
         translateX(-4px);
 
