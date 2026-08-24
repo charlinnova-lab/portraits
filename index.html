@@ -1,7 +1,79 @@
-<main>
+<!DOCTYPE html>
+<html lang="fr">
 
-    <section id="gallery">
-        Chargement des portraits…
-    </section>
+<head>
 
-</main>
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Portraits — L'innovation, une histoire collective</title>
+
+    <link
+        rel="stylesheet"
+        href="style.css"
+    >
+
+</head>
+
+
+<body>
+
+    <main>
+
+        <!-- =================================================
+             GALERIE DES PORTRAITS
+        ================================================== -->
+
+        <section id="gallery">
+
+            <div class="loading">
+                Chargement des portraits…
+            </div>
+
+        </section>
+
+
+        <!-- =================================================
+             FICHE DÉTAILLÉE
+             
+             Cette section est cachée au démarrage.
+             Elle apparaît lorsqu'un visiteur clique
+             sur une carte.
+        ================================================== -->
+
+        <section
+            id="detail"
+            class="detail-view"
+            hidden
+        >
+
+            <button
+                id="back-button"
+                class="back-button"
+                type="button"
+            >
+                ← Retour aux portraits
+            </button>
+
+
+            <div id="detail-content">
+
+                <!-- Le contenu de l'interview sera créé
+                     automatiquement par JavaScript -->
+
+            </div>
+
+        </section>
+
+    </main>
+
+
+    <script src="script.js"></script>
+
+</body>
+
+</html>
