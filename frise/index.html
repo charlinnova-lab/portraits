@@ -277,7 +277,7 @@
         </div>
     </section>
 
-    <script>
+   <script>
     const API_URL = "https://portaitsexpo.charlottepiau-innova.workers.dev";
 
     async function updateCategoryCounts() {
@@ -285,7 +285,6 @@
             const response = await fetch(API_URL);
             const data = await response.json();
             
-            // Récupère la liste des éléments
             const items = data.records || (Array.isArray(data) ? data : []);
 
             const counts = {
@@ -299,27 +298,29 @@
             items.forEach(item => {
                 const fields = item.fields || item;
                 
-                // Récupération du champ Category (avec sécurité si majuscule/minuscule)
-                const rawCategory = fields.Category || fields.category || "";
+                // Récupération de la catégorie (conversion en texte si Airtable renvoie un tableau)
+                let rawCategory = fields.Category || fields.category || "";
+                if (Array.isArray(rawCategory)) {
+                    rawCategory = rawCategory.join(" ");
+                }
                 
-                // passage en minuscules pour faciliter le test
                 const category = rawCategory.toLowerCase();
 
-                // Test basé sur les mots-clés uniques de tes phrases Airtable
-                if (category.includes("germent")) {
+                // Filtrage strict par mot-clé unique
+                if (category.includes("germent") || category.includes("ecoles") || category.includes("écoles")) {
                     counts.germe++;
-                } else if (category.includes("grandit")) {
+                } else if (category.includes("grandit") || category.includes("centres techniques")) {
                     counts.grandit++;
-                } else if (category.includes("forme")) {
+                } else if (category.includes("start-up") || category.includes("startup")) {
                     counts.forme++;
-                } else if (category.includes("solution")) {
+                } else if (category.includes("solution") || category.includes("entreprises")) {
                     counts.solution++;
-                } else if (category.includes("déploit") || category.includes("deploit") || category.includes("déploie") || category.includes("deploie")) {
+                } else if (category.includes("deplo") || category.includes("dynamiques collectives")) {
                     counts.deploie++;
                 }
             });
 
-            // Mise à jour de l'affichage sur la frise
+            // Mise à jour de l'affichage
             document.querySelectorAll('.idea-step').forEach(step => {
                 const catKey = step.getAttribute('data-category');
                 if (catKey && counts[catKey] !== undefined) {
@@ -337,5 +338,3 @@
 
     document.addEventListener("DOMContentLoaded", updateCategoryCounts);
 </script>
-</body>
-</html>
