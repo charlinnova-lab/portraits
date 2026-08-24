@@ -12,6 +12,7 @@
    3. gère les catégories et leurs couleurs
    4. ouvre une interview dans une sidebar
    5. permet de revenir à la galerie
+   6. affiche une flèche ↗ sur les cartes
 
    IMPORTANT :
    Le token Airtable n'est JAMAIS présent ici.
@@ -119,17 +120,11 @@ function escapeHTML(value) {
 
 
 /*
-   Transforme la syntaxe de mise en forme
-   utilisée dans Airtable :
+   Transforme la syntaxe utilisée dans Airtable :
 
    **texte**   → gras
    _texte_     → italique
    ***texte*** → gras + italique
-
-   Important :
-   On échappe d'abord le HTML pour éviter
-   qu'un contenu Airtable puisse injecter
-   du code HTML ou JavaScript.
 */
 
 function formatText(value) {
@@ -140,37 +135,25 @@ function formatText(value) {
 
     return safeText
 
-        /* -------------------------------------------------
-           GRAS + ITALIQUE
-        ------------------------------------------------- */
-
+        /* Gras + italique */
         .replace(
             /\*\*\*(.+?)\*\*\*/g,
             "<strong><em>$1</em></strong>"
         )
 
-        /* -------------------------------------------------
-           GRAS
-        ------------------------------------------------- */
-
+        /* Gras */
         .replace(
             /\*\*(.+?)\*\*/g,
             "<strong>$1</strong>"
         )
 
-        /* -------------------------------------------------
-           ITALIQUE
-        ------------------------------------------------- */
-
+        /* Italique */
         .replace(
             /_(.+?)_/g,
             "<em>$1</em>"
         )
 
-        /* -------------------------------------------------
-           SAUTS DE LIGNE
-        ------------------------------------------------- */
-
+        /* Sauts de ligne */
         .replace(
             /\r?\n/g,
             "<br>"
@@ -391,11 +374,6 @@ function creerCartePortrait(record) {
         "portrait-card";
 
 
-    /*
-       Accessibilité :
-       la carte devient cliquable au clavier.
-    */
-
     card.setAttribute(
         "tabindex",
         "0"
@@ -510,6 +488,33 @@ function creerCartePortrait(record) {
             taglineElement
         );
     }
+
+
+    /* -----------------------------------------------------
+       FLÈCHE
+    ----------------------------------------------------- */
+
+    const arrow =
+        document.createElement("span");
+
+
+    arrow.className =
+        "card-arrow";
+
+
+    arrow.setAttribute(
+        "aria-hidden",
+        "true"
+    );
+
+
+    arrow.textContent =
+        "↗";
+
+
+    content.appendChild(
+        arrow
+    );
 
 
     card.appendChild(content);
@@ -641,11 +646,6 @@ function ouvrirInterview(record) {
             "Interview réalisée auprès de"
         ] || "";
 
-
-    /*
-       Compatibilité avec les deux noms possibles
-       du champ Airtable.
-    */
 
     const photoCredit =
         fields["Photo"] ||
@@ -858,13 +858,6 @@ function ouvrirInterview(record) {
             "interview-person";
 
 
-        /*
-           IMPORTANT :
-           innerHTML est utilisé ici avec formatText()
-           afin de conserver le gras et l'italique
-           provenant d'Airtable.
-        */
-
         person.innerHTML =
             `Interview réalisée auprès de : ${formatText(interviewPerson)}`;
 
@@ -939,16 +932,6 @@ function ouvrirInterview(record) {
        AFFICHAGE DE LA SIDEBAR
     ===================================================== */
 
-    /*
-       La galerie reste visible derrière.
-
-       La sidebar est affichée au-dessus grâce
-       à position: fixed et z-index: 1000.
-
-       Le fond sombre est activé par :
-       body.detail-open::before
-    */
-
     gallery.hidden =
         false;
 
@@ -961,10 +944,6 @@ function ouvrirInterview(record) {
         "detail-open"
     );
 
-
-    /*
-       On remonte en haut de l'iframe.
-    */
 
     window.scrollTo({
         top: 0,
@@ -982,11 +961,6 @@ function ajouterSectionInterview(
     titre,
     texte
 ) {
-
-    /*
-       Si Airtable n'a pas de texte,
-       on n'affiche pas la section.
-    */
 
     if (
         texte === null ||
@@ -1025,12 +999,6 @@ function ajouterSectionInterview(
     paragraph.className =
         "interview-text";
 
-
-    /*
-       IMPORTANT :
-       On utilise formatText() afin de conserver
-       le gras, l'italique et les retours à la ligne.
-    */
 
     paragraph.innerHTML =
         formatText(texte);
@@ -1074,13 +1042,6 @@ function revenirGalerie() {
         return;
     }
 
-
-    /*
-       On ferme uniquement la sidebar.
-
-       La galerie n'a jamais été cachée,
-       mais on force son affichage par sécurité.
-    */
 
     detail.hidden =
         true;
