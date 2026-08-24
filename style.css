@@ -1,72 +1,79 @@
-/* =========================================
-   BASE
-========================================= */
+/* =========================================================
+   GALERIE — L'INNOVATION, UNE HISTOIRE COLLECTIVE
+   Innov'a
+
+   Feuille de style de la galerie et des interviews.
+========================================================= */
+
+
+/* =========================================================
+   1. BASE
+========================================================= */
 
 * {
     box-sizing: border-box;
 }
 
+
 html {
     scroll-behavior: smooth;
 }
 
+
 body {
+
     margin: 0;
     padding: 0;
+
     background: #f5f3ee;
+
     color: #333;
-    font-family: Arial, Helvetica, sans-serif;
+
+    font-family:
+        Arial,
+        Helvetica,
+        sans-serif;
 }
+
 
 main {
+
     width: min(1400px, 92%);
+
     margin: 0 auto;
-    padding: 60px 0 80px;
+
+    padding: 50px 0 80px;
 }
 
 
-/* =========================================
-   INTRO
-========================================= */
-
-h1 {
-    margin: 0;
-    font-size: clamp(38px, 5vw, 72px);
-    line-height: 1.05;
-    font-weight: 800;
-}
-
-.intro {
-    max-width: 800px;
-    margin: 24px 0 0;
-    font-size: clamp(18px, 2vw, 24px);
-    line-height: 1.5;
-}
-
-
-/* =========================================
-   GALERIE
-========================================= */
+/* =========================================================
+   2. GALERIE
+========================================================= */
 
 #gallery {
-    margin-top: 70px;
 
     display: grid;
-    grid-template-columns: repeat(
-        auto-fit,
-        minmax(280px, 1fr)
-    );
 
-    gap: 28px;
+    grid-template-columns:
+        repeat(
+            auto-fit,
+            minmax(280px, 1fr)
+        );
+
+    gap: 30px;
+
+    transition:
+        opacity 0.25s ease;
 }
 
 
-/* =========================================
-   CARTE PORTRAIT
-========================================= */
+/* =========================================================
+   3. CARTE PORTRAIT
+========================================================= */
 
 .portrait-card {
-    background: white;
+
+    background: #ffffff;
 
     border-radius: 28px;
 
@@ -82,20 +89,25 @@ h1 {
         box-shadow 0.25s ease;
 }
 
+
 .portrait-card:hover {
-    transform: translateY(-6px);
+
+    transform:
+        translateY(-7px);
 
     box-shadow:
-        0 18px 40px rgba(0, 0, 0, 0.13);
+        0 18px 40px rgba(0, 0, 0, 0.14);
 }
 
 
-/* =========================================
-   IMAGE
-========================================= */
+/* =========================================================
+   4. IMAGE DE LA CARTE
+========================================================= */
 
 .portrait-image {
+
     width: 100%;
+
     aspect-ratio: 16 / 10;
 
     object-fit: cover;
@@ -104,102 +116,140 @@ h1 {
 }
 
 
-/* =========================================
-   CONTENU DE LA CARTE
-========================================= */
+/* =========================================================
+   5. CONTENU DE LA CARTE
+========================================================= */
 
 .portrait-content {
+
     padding: 24px;
 }
 
+
 .portrait-title {
+
     margin: 0;
 
-    font-size: 25px;
-    line-height: 1.15;
+    font-size:
+        clamp(23px, 2vw, 30px);
+
+    line-height: 1.1;
 
     font-weight: 800;
 }
 
+
 .portrait-tagline {
+
     margin: 12px 0 0;
 
     font-size: 17px;
+
     line-height: 1.4;
 
     font-weight: 700;
+
     font-style: italic;
+
+    color: #555;
 }
 
 
-/* =========================================
-   PASTILLE / CHAPITRE
-========================================= */
+/* =========================================================
+   6. PASTILLE / CHAPITRE
+========================================================= */
 
 .chapter-badge {
+
     display: inline-flex;
 
     align-items: center;
+
     justify-content: center;
 
     min-height: 42px;
 
-    padding: 9px 16px;
+    padding: 9px 17px;
 
     margin-bottom: 18px;
 
     border-radius: 14px;
 
     font-size: 14px;
+
     font-weight: 700;
 
     color: #222;
 }
 
 
-/* =========================================
-   COULEURS DES CATÉGORIES
-========================================= */
+/* =========================================================
+   7. COULEURS DES CATÉGORIES
+========================================================= */
 
 .category-germe {
-    background: #FB6F92;
+
+    background:
+        #FB6F92;
 }
+
 
 .category-grandit {
-    background: #FDC500;
+
+    background:
+        #FDC500;
 }
+
 
 .category-forme {
-    background: #9BC045;
+
+    background:
+        #9BC045;
 }
+
 
 .category-solution {
-    background: #23C0F1;
+
+    background:
+        #23C0F1;
 }
+
 
 .category-deploie {
-    background: #E8873A;
+
+    background:
+        #E8873A;
 }
 
 
-/* =========================================
-   ÉTAT DE CHARGEMENT
-========================================= */
+/* =========================================================
+   8. CHARGEMENT
+========================================================= */
 
 .loading {
+
+    grid-column:
+        1 / -1;
+
+    padding: 60px;
+    text-align: center;
     font-size: 20px;
     font-weight: 600;
 }
 
 
-/* =========================================
-   ERREUR
-========================================= */
+/* =========================================================
+   9. ERREUR
+========================================================= */
 
 .error {
+
+    grid-column:
+        1 / -1;
+
     padding: 30px;
 
-    background: white;
+    background: #ffffff;
 
     border-radius: 20px;
 
@@ -209,22 +259,283 @@ h1 {
 }
 
 
-/* =========================================
-   MOBILE
-========================================= */
+/* =========================================================
+   10. VUE DÉTAILLÉE
+========================================================= */
+
+.detail-view {
+
+    width: 100%;
+
+    animation:
+        detailAppear 0.35s ease;
+}
+
+
+@keyframes detailAppear {
+
+    from {
+
+        opacity: 0;
+        transform:
+            translateY(15px);
+    }
+
+    to {
+        opacity: 1;
+        transform:
+            translateY(0);
+    }
+}
+
+
+/* =========================================================
+   11. BOUTON RETOUR
+========================================================= */
+
+.back-button {
+    border: none;
+    background: transparent;
+    padding: 10px 0;
+    margin-bottom: 30px;
+    font-family: inherit;
+    font-size: 17px;
+    font-weight: 700;
+    color: #444;
+    cursor: pointer;
+    transition:
+        transform 0.2s ease;
+}
+
+
+.back-button:hover {
+
+    transform:
+        translateX(-5px);
+}
+
+
+/* =========================================================
+   12. EN-TÊTE DE L'INTERVIEW
+========================================================= */
+
+.detail-header {
+
+    margin-bottom: 45px;
+}
+
+
+/* =========================================================
+   13. PASTILLE DÉTAIL
+========================================================= */
+
+.detail-badge {
+
+    display: inline-flex;
+
+    align-items: center;
+
+    padding: 12px 20px;
+
+    border-radius: 16px;
+
+    font-size: 15px;
+
+    font-weight: 700;
+
+    color: #222;
+
+    margin-bottom: 22px;
+}
+
+
+/* =========================================================
+   14. TITRE DE LA STRUCTURE
+========================================================= */
+
+.detail-title {
+    margin: 0;
+    display: inline-block;
+    padding: 15px 28px;
+    border-radius: 20px;
+    font-size:
+        clamp(38px, 6vw, 76px);
+    line-height: 1;
+    font-weight: 900;
+    color: #111;
+    background:
+        #FDC500;
+}
+
+
+/* =========================================================
+   15. TAGLINE DE L'INTERVIEW
+========================================================= */
+
+.detail-tagline {
+    width: 100%;
+    max-width: 800px;
+    margin: 30px auto 0;
+    font-size:
+        clamp(20px, 2vw, 27px);
+    line-height: 1.35;
+    font-weight: 700;
+    font-style: italic;
+    color: #555;
+    text-align: center;
+}
+
+
+/* =========================================================
+   16. GRANDE IMAGE
+========================================================= */
+
+.detail-image-wrapper {
+    width: 100%;
+    margin: 45px 0 55px;
+    border-radius: 30px;
+    overflow: hidden;
+    background: #ffffff;
+    box-shadow:
+        0 15px 45px rgba(0, 0, 0, 0.10);
+}
+
+
+.detail-image {
+    width: 100%;
+    max-height: 650px;
+    object-fit: cover;
+    display: block;
+}
+
+
+/* =========================================================
+   17. CONTENU DE L'INTERVIEW
+========================================================= */
+
+.interview-content {
+    max-width: 950px;
+    margin: 0 auto;
+}
+
+
+/* =========================================================
+   18. BLOC D'INTERVIEW
+========================================================= */
+
+.interview-section {
+    margin-bottom: 55px;
+}
+
+
+.interview-section-title {
+    margin: 0 0 18px;
+    font-size:
+        clamp(24px, 3vw, 34px);
+    line-height: 1.15;
+    font-weight: 800;
+}
+
+
+/* =========================================================
+   19. TEXTE DE L'INTERVIEW
+========================================================= */
+
+.interview-text {
+    margin: 0;
+    font-size:
+        clamp(17px, 1.6vw, 20px);
+    line-height: 1.7;
+    text-align: justify;
+    color: #444;
+}
+
+
+/* =========================================================
+   20. PERSONNE INTERVIEWÉE
+========================================================= */
+
+.interview-person {
+    margin-top: 15px;
+    font-size: 16px;
+    font-style: italic;
+    color: #666;
+}
+
+
+/* =========================================================
+   21. RESSOURCES COMPLÉMENTAIRES
+========================================================= */
+
+.detail-resources {
+    margin-top: 60px;
+    padding: 30px;
+    background: #ffffff;
+    border-radius: 24px;
+}
+
+
+.detail-resources-title {
+    margin: 0 0 15px;
+    font-size: 24px;
+    font-weight: 800;
+}
+
+
+/* =========================================================
+   22. CRÉDIT PHOTO
+========================================================= */
+
+.photo-credit {
+    margin-top: 15px;
+    font-size: 13px;
+    color: #777;
+}
+
+
+/* =========================================================
+   23. MOBILE
+========================================================= */
 
 @media (max-width: 700px) {
 
     main {
+
         width: 90%;
-        padding-top: 40px;
+        padding-top: 30px;
     }
 
+
     #gallery {
-        grid-template-columns: 1fr;
+        grid-template-columns:
+            1fr;
+
+        gap: 22px;
     }
+
 
     .portrait-card {
         border-radius: 22px;
     }
+
+
+    .detail-title {
+
+        font-size: 42px;
+        padding: 12px 18px;
+    }
+
+
+    .detail-image-wrapper {
+
+        margin-top: 30px;
+        border-radius: 20px;
+    }
+
+
+    .interview-section {
+
+        margin-bottom: 40px;
+    }
+
 }
