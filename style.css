@@ -445,7 +445,7 @@ body.detail-open::before {
     border-radius: 18px;
 
     font-size:
-        clamp(32px, 5vw, 52px);
+        clamp(32px, 5vw, 42px);
 
     line-height: 1.05;
 
@@ -472,7 +472,7 @@ body.detail-open::before {
         30px auto 0;
 
     font-size:
-        clamp(20px, 2vw, 27px);
+        clamp(20px, 2vw, 18px);
 
     line-height: 1.35;
 
