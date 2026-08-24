@@ -437,18 +437,19 @@ body.detail-open::before {
 
     width: fit-content;
 
-    margin: 10px 0 0;
+    margin: 10px auto 0; /*centre le titre */
 
     padding: 14px 22px;
 
     border-radius: 18px;
 
     font-size:
-        clamp(32px, 5vw, 52px);
+        clamp(32px, 5vw, 47px);
 
     line-height: 1.05;
 
     font-weight: 900;
+   text-align: center;
 
     color: #111;
 }
@@ -608,10 +609,12 @@ body.detail-open::before {
 
 
 /* =========================================================
-   23. TEXTE EN GRAS
+   23. MISE EN FORME DU TEXTE
 ========================================================= */
 
-.interview-text strong {
+/* Gras */
+.interview-text strong,
+.interview-text b {
 
     font-weight: 800;
 
@@ -619,9 +622,23 @@ body.detail-open::before {
 }
 
 
-.interview-person strong {
+/* Italique */
+.interview-text em,
+.interview-text i {
+
+    font-style: italic;
+}
+
+
+/* Gras + italique */
+.interview-text strong em,
+.interview-text em strong,
+.interview-text b i,
+.interview-text i b {
 
     font-weight: 800;
+
+    font-style: italic;
 
     color: #222;
 }
@@ -644,6 +661,15 @@ body.detail-open::before {
     color: #666;
 }
 
+
+/* Respect du gras dans le nom de la personne */
+.interview-person strong,
+.interview-person b {
+
+    font-weight: 800;
+
+    color: #222;
+}
 
 /* =========================================================
    25. RESSOURCES COMPLÉMENTAIRES
