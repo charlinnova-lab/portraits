@@ -51,7 +51,7 @@
             z-index: 1;
             aspect-ratio: 1 / 1;
             border-radius: 20px;
-            padding: 15px;
+            padding: 16px;
             display: flex;
             flex-direction: column;
             justify-content: space-between;
@@ -76,23 +76,31 @@
             opacity: .6;
         }
 
-        .idea-count {
-                font-size: clamp(38px, 4.5vw, 64px); /* Taille nettement agrandie */
-                font-weight: 900;
-                line-height: 0.85;
-                letter-spacing: -0.04em;
-                margin: 6px 0;
+        /* BLOC COMPTEUR FIXÉ ET AGRANDI */
+        .idea-count-wrapper {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            margin: 4px 0;
         }
 
-        .idea-count span {
+        .count-value {
+            font-size: clamp(36px, 3.8vw, 54px) !important;
+            font-weight: 900 !important;
+            line-height: 0.9 !important;
+            letter-spacing: -0.04em;
             display: block;
-            font-size: 9px;
-            font-weight: 700;
-            line-height: 1;
-            letter-spacing: 0.1em;
+        }
+
+        .count-label {
+            font-size: 9px !important;
+            font-weight: 800 !important;
+            line-height: 1.2 !important;
+            letter-spacing: 0.08em;
             text-transform: uppercase;
-            opacity: 0.7;
-            margin-top: 4px;
+            opacity: 0.75;
+            margin-top: 2px;
+            display: block;
         }
 
         .idea-name {
@@ -138,9 +146,9 @@
                 <!-- 01 : GERME -->
                 <div class="idea-step" style="background:#FB6F92;" data-category="germe">
                     <div class="idea-number">01</div>
-                    <div class="idea-count">
+                    <div class="idea-count-wrapper">
                         <span class="count-value">-</span>
-                        <span>portraits</span>
+                        <span class="count-label">portraits</span>
                     </div>
                     <div class="idea-name">
                         Les idées<br>
@@ -152,9 +160,9 @@
                 <!-- 02 : GRANDIT -->
                 <div class="idea-step" style="background:#FDC500;" data-category="grandit">
                     <div class="idea-number">02</div>
-                    <div class="idea-count">
+                    <div class="idea-count-wrapper">
                         <span class="count-value">-</span>
-                        <span>portraits</span>
+                        <span class="count-label">portraits</span>
                     </div>
                     <div class="idea-name">
                         L'idée<br>
@@ -166,9 +174,9 @@
                 <!-- 03 : FORME -->
                 <div class="idea-step" style="background:#9BC045;" data-category="forme">
                     <div class="idea-number">03</div>
-                    <div class="idea-count">
+                    <div class="idea-count-wrapper">
                         <span class="count-value">-</span>
-                        <span>portraits</span>
+                        <span class="count-label">portraits</span>
                     </div>
                     <div class="idea-name">
                         L'idée<br>
@@ -180,9 +188,9 @@
                 <!-- 04 : SOLUTION -->
                 <div class="idea-step" style="background:#23C0F1;" data-category="solution">
                     <div class="idea-number">04</div>
-                    <div class="idea-count">
+                    <div class="idea-count-wrapper">
                         <span class="count-value">-</span>
-                        <span>portraits</span>
+                        <span class="count-label">portraits</span>
                     </div>
                     <div class="idea-name">
                         L'idée devient<br>
@@ -194,9 +202,9 @@
                 <!-- 05 : DEPLOIE -->
                 <div class="idea-step" style="background:#E8873A;" data-category="deploie">
                     <div class="idea-number">05</div>
-                    <div class="idea-count">
+                    <div class="idea-count-wrapper">
                         <span class="count-value">-</span>
-                        <span>portraits</span>
+                        <span class="count-label">portraits</span>
                     </div>
                     <div class="idea-name">
                         L'idée<br>
@@ -213,58 +221,60 @@
     <script>
         const API_URL = "https://portaitsexpo.charlottepiau-innova.workers.dev";
 
-       async function updateCategoryCounts() {
-    try {
-        const response = await fetch(API_URL);
-        const data = await response.json();
-        
-        const items = data.records || (Array.isArray(data) ? data : []);
-        const counts = { germe: 0, grandit: 0, forme: 0, solution: 0, deploie: 0 };
+        async function updateCategoryCounts() {
+            try {
+                const response = await fetch(API_URL);
+                const data = await response.json();
+                
+                const items = data.records || (Array.isArray(data) ? data : []);
+                const counts = { germe: 0, grandit: 0, forme: 0, solution: 0, deploie: 0 };
 
-        items.forEach(item => {
-            const fields = item.fields || item;
-            
-            let rawCategory = fields["Category"] || fields["Catégory"] || fields["category"] || fields["Catégorie"] || "";
-            if (Array.isArray(rawCategory)) rawCategory = rawCategory.join(" ");
-            const category = String(rawCategory).toLowerCase();
+                items.forEach(item => {
+                    const fields = item.fields || item;
+                    
+                    let rawCategory = fields["Category"] || fields["Catégory"] || fields["category"] || fields["Catégorie"] || "";
+                    if (Array.isArray(rawCategory)) rawCategory = rawCategory.join(" ");
+                    const category = String(rawCategory).toLowerCase().trim();
 
-            // 01. GERME : Écoles, labos, germent
-            if (category.includes("germ") || category.includes("ecole") || category.includes("école")) {
-                counts.germe++;
-            }
-            // 02. GRANDIT : Centres techniques, grandit
-            else if (category.includes("grandit") || category.includes("centre")) {
-                counts.grandit++;
-            }
-            // 03. FORME : Start-up
-            else if (category.includes("forme") || category.includes("start")) {
-                counts.forme++;
-            }
-            // 04. SOLUTION : Entreprises, solution
-            else if (category.includes("solution") || category.includes("entreprise")) {
-                counts.solution++;
-            }
-            // 05. DEPLOIE : Dynamiques collectives, déploie
-            else if (category.includes("deplo") || category.includes("déplo") || category.includes("collective")) {
-                counts.deploie++;
-            }
-        });
+                    // Affichage console pour vérification immédiate des intitulés
+                    console.log("Catégorie lue :", category);
 
-        // Mise à jour de l'affichage des chiffres
-        document.querySelectorAll('.idea-step').forEach(step => {
-            const catKey = step.getAttribute('data-category');
-            if (catKey && counts[catKey] !== undefined) {
-                const countEl = step.querySelector('.count-value');
-                if (countEl) countEl.textContent = counts[catKey];
+                    // 01. GERME : Écoles, universités, laboratoires
+                    if (category.includes("germ") || category.includes("ecole") || category.includes("école") || category.includes("labo") || category.includes("université")) {
+                        counts.germe++;
+                    }
+                    // 02. GRANDIT : Centres techniques, recherche, incubateur
+                    else if (category.includes("grandit") || category.includes("centre") || category.includes("incubateur") || category.includes("recherche")) {
+                        counts.grandit++;
+                    }
+                    // 03. FORME : Start-ups, porteurs
+                    else if (category.includes("forme") || category.includes("start") || category.includes("porteur")) {
+                        counts.forme++;
+                    }
+                    // 04. SOLUTION : Entreprises, PME, grands groupes, solutions
+                    else if (category.includes("solution") || category.includes("entreprise") || category.includes("pme") || category.includes("groupe")) {
+                        counts.solution++;
+                    }
+                    // 05. DEPLOIE : Dynamiques collectives, territoires, écosystème
+                    else if (category.includes("deplo") || category.includes("déplo") || category.includes("collective") || category.includes("territoire")) {
+                        counts.deploie++;
+                    }
+                });
+
+                // Mettre à jour l'affichage des chiffres
+                document.querySelectorAll('.idea-step').forEach(step => {
+                    const catKey = step.getAttribute('data-category');
+                    if (catKey && counts[catKey] !== undefined) {
+                        const countEl = step.querySelector('.count-value');
+                        if (countEl) countEl.textContent = counts[catKey];
+                    }
+                });
+
+            } catch (error) {
+                console.error("Erreur lors du calcul des catégories :", error);
             }
-        });
+        }
 
-    } catch (error) {
-        console.error("Erreur lors du calcul des catégories :", error);
-    }
-}
-
-        // Lier l'événement de clic de manière indépendante pour garantir la transmission
         document.addEventListener("DOMContentLoaded", () => {
             updateCategoryCounts();
 
