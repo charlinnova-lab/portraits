@@ -780,14 +780,11 @@ function ouvrirInterview(record) {
        AFFICHAGE
     ----------------------------------------------------- */
 
-    gallery.hidden =
-        true;
+    gallery.hidden = false;
 
+detail.hidden = false;
 
-    detail.hidden =
-        false;
-
-
+document.body.classList.add("detail-open");
     /*
        On remonte en haut de l'iframe.
     */
@@ -882,12 +879,11 @@ function revenirGalerie() {
         document.getElementById("detail");
 
 
-    detail.hidden =
-        true;
+   detail.hidden = true;
 
+gallery.hidden = false;
 
-    gallery.hidden =
-        false;
+document.body.classList.remove("detail-open");
 
 
     window.scrollTo({
@@ -908,6 +904,37 @@ document
         revenirGalerie
     );
 
+/* =========================================================
+   SIDEBAR MOBILE
+========================================================= */
+
+#detail {
+
+    width: 100vw;
+
+    padding:
+        30px 25px 50px;
+}
+
+
+.detail-title {
+
+    font-size: 38px;
+}
+
+
+.detail-image-wrapper {
+
+    margin-top: 25px;
+
+    border-radius: 18px;
+}
+
+
+.detail-image {
+
+    max-height: 400px;
+}
 
 /* =========================================================
    12. LANCEMENT
