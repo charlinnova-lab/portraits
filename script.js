@@ -429,5 +429,20 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     });
 
+   // Écoute les messages envoyés par la frise via la page parente
+window.addEventListener('message', (event) => {
+    if (event.data && event.data.type === 'FILTER_GALLERY') {
+        const catKey = event.data.category;
+        const targetBtn = document.querySelector(`.filter-btn[data-filter="${catKey}"]`);
+        
+        if (targetBtn) {
+            targetBtn.click(); // Simule le clic sur le bon filtre
+            
+            // Fait défiler la page WordPress jusqu'à la galerie
+            window.frameElement?.scrollIntoView({ behavior: 'smooth' });
+        }
+    }
+});
+
     chargerPortraits();
 });
