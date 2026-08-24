@@ -662,15 +662,15 @@ function ouvrirInterview(record) {
     ----------------------------------------------------- */
 
     const title =
-        document.createElement("h1");
+    document.createElement("h1");
 
 
-    title.className =
-        "detail-title";
+title.className =
+    `detail-title ${categoryInfo.className}`;
 
 
-    title.textContent =
-        structure;
+title.textContent =
+    structure;
 
 
     header.appendChild(title);
