@@ -34,6 +34,7 @@
             align-items: center;
         }
 
+        /* Ligne de fond du parcours */
         .idea-journey-path::before {
             content: "";
             position: absolute;
@@ -46,6 +47,7 @@
             z-index: 0;
         }
 
+        /* Cartes d'étapes */
         .idea-step {
             position: relative;
             z-index: 1;
@@ -76,7 +78,7 @@
             opacity: .6;
         }
 
-        /* BLOC COMPTEUR FIXÉ ET AGRANDI */
+        /* Bloc compteur gros chiffres */
         .idea-count-wrapper {
             display: flex;
             flex-direction: column;
@@ -85,9 +87,9 @@
         }
 
         .count-value {
-            font-size: clamp(36px, 3.8vw, 54px) !important;
+            font-size: clamp(38px, 4.2vw, 58px) !important;
             font-weight: 900 !important;
-            line-height: 0.9 !important;
+            line-height: 0.85 !important;
             letter-spacing: -0.04em;
             display: block;
         }
@@ -99,7 +101,7 @@
             letter-spacing: 0.08em;
             text-transform: uppercase;
             opacity: 0.75;
-            margin-top: 2px;
+            margin-top: 4px;
             display: block;
         }
 
@@ -120,6 +122,7 @@
             transform: translate(3px, -3px);
         }
 
+        /* Mobile */
         @media (max-width: 600px) {
             .idea-journey-path {
                 grid-template-columns: repeat(2, 1fr);
@@ -221,89 +224,73 @@
     <script>
         const API_URL = "https://portaitsexpo.charlottepiau-innova.workers.dev";
 
-async function updateCategoryCounts() {
-    try {
-        const response = await fetch(API_URL);
-        const data = await response.json();
-        
-        const items = data.records || (Array.isArray(data) ? data : []);
-        const counts = { germe: 0, grandit: 0, forme: 0, solution: 0, deploie: 0 };
-
-        items.forEach(item => {
-            const fields = item.fields || item;
-            
-            // Récupère la valeur brute (gestion si c't un tableau ou un texte)
-            let rawCategory = fields["Category"] || fields["Catégory"] || fields["category"] || fields["Catégorie"] || "";
-            if (Array.isArray(rawCategory)) rawCategory = rawCategory[0] || "";
-            
-            const category = String(rawCategory).trim();
-
-            // Comparaison exacte (sensible à la casse / aux espaces)
-            switch (category) {
-                case "Les idées germent : écoles et universités":
-                case "Les idées germent":
-                case "Germe":
-                    counts.germe++;
-                    break;
-
-                case "L'idée grandit : centres techniques et de recherche":
-                case "L'idée grandit":
-                case "Grandit":
-                    counts.grandit++;
-                    break;
-
-                case "L'idée prend forme : start-up":
-                case "L'idée prend forme":
-                case "Forme":
-                    counts.forme++;
-                    break;
-
-                case "L'idée devient solution : entreprises":
-                case "L'idée devient solution":
-                case "Solution":
-                    counts.solution++;
-                    break;
-
-                case "L'idée se déploie : dynamiques collectives":
-                case "L'idée se déploie":
-                case "Déploie":
-                case "Deploie":
-                    counts.deploie++;
-                    break;
+        async function updateCategoryCounts() {
+            try {
+                const response = await fetch(API_URL);
+                const data = await response.json();
                 
-                default:
-                    // Affiche dans la console (F12) si une valeur Airtable ne rentre dans aucune case
-                    console.warn("Catégorie Airtable non reconnue :", `"${category}"`);
-                    break;
+                const items = data.records || (Array.isArray(data) ? data : []);
+                const counts = { germe: 0, grandit: 0, forme: 0, solution: 0, deploie: 0 };
+
+                items.forEach(item => {
+                    const fields = item.fields || item;
+                    
+                    let rawCategory = fields["Category"] || fields["Catégory"] || fields["category"] || fields["Catégorie"] || "";
+                    if (Array.isArray(rawCategory)) rawCategory = rawCategory[0] || "";
+                    
+                    const category = String(rawCategory).trim().toLowerCase();
+
+                    // 01. GERME : "Là où les idées germent : écoles & laboratoires"
+                    if (category.includes("écoles & laboratoires") || category.includes("ecoles & laboratoires") || category.includes("idées germent")) {
+                        counts.germe++;
+                    }
+                    // 02. GRANDIT : "Là où l’idée grandit et est testées : centres techniques & dispositifs d’accompagnement"
+                    else if (category.includes("grandit") || category.includes("centres techniques")) {
+                        counts.grandit++;
+                    }
+                    // 03. FORME : "Là où l’idée prend forme : start-up"
+                    else if (category.includes("prend forme") || category.includes("start-up") || category.includes("startup")) {
+                        counts.forme++;
+                    }
+                    // 04. SOLUTION : "Là où l’idée se transforme en solution : entreprises"
+                    else if (category.includes("transforme en solution") || category.includes("entreprises")) {
+                        counts.solution++;
+                    }
+                    // 05. DEPLOIE : "Là où l’idée se déploit : dynamiques collectives"
+                    else if (category.includes("déploit") || category.includes("déploie") || category.includes("deploie") || category.includes("dynamiques collectives")) {
+                        counts.deploie++;
+                    }
+                    else if (category !== "") {
+                        console.warn("Catégorie Airtable non capturée :", `"${rawCategory}"`);
+                    }
+                });
+
+                // Mise à jour de l'affichage des 5 compteurs
+                document.querySelectorAll('.idea-step').forEach(step => {
+                    const catKey = step.getAttribute('data-category');
+                    if (catKey && counts[catKey] !== undefined) {
+                        const countEl = step.querySelector('.count-value');
+                        if (countEl) countEl.textContent = counts[catKey];
+                    }
+                });
+
+            } catch (error) {
+                console.error("Erreur lors du calcul des catégories :", error);
             }
+        }
+
+        document.addEventListener("DOMContentLoaded", () => {
+            updateCategoryCounts();
+
+            document.querySelectorAll('.idea-step').forEach(step => {
+                step.addEventListener('click', () => {
+                    const catKey = step.getAttribute('data-category');
+                    if (catKey) {
+                        window.parent.postMessage({ type: 'FILTER_GALLERY', category: catKey }, '*');
+                    }
+                });
+            });
         });
-
-        // Mise à jour des compteurs sur les cartes
-        document.querySelectorAll('.idea-step').forEach(step => {
-            const catKey = step.getAttribute('data-category');
-            if (catKey && counts[catKey] !== undefined) {
-                const countEl = step.querySelector('.count-value');
-                if (countEl) countEl.textContent = counts[catKey];
-            }
-        });
-
-    } catch (error) {
-        console.error("Erreur lors du calcul des catégories :", error);
-    }
-}
-
-document.addEventListener("DOMContentLoaded", () => {
-    updateCategoryCounts();
-
-    document.querySelectorAll('.idea-step').forEach(step => {
-        step.addEventListener('click', () => {
-            const catKey = step.getAttribute('data-category');
-            if (catKey) {
-                window.parent.postMessage({ type: 'FILTER_GALLERY', category: catKey }, '*');
-            }
-        });
-    });
-});
     </script>
 </body>
 </html>
