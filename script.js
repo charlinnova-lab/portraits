@@ -88,23 +88,43 @@ function escapeHTML(value) {
         return "";
     }
 
+
     return String(value)
 
-        .replace(/&/g, "&amp;")
+        .replace(
+            /&/g,
+            "&amp;"
+        )
 
-        .replace(/</g, "&lt;")
+        .replace(
+            /</g,
+            "&lt;"
+        )
 
-        .replace(/>/g, "&gt;")
+        .replace(
+            />/g,
+            "&gt;"
+        )
 
-        .replace(/"/g, "&quot;")
+        .replace(
+            /"/g,
+            "&quot;"
+        )
 
-        .replace(/'/g, "&#039;");
+        .replace(
+            /'/g,
+            "&#039;"
+        );
 }
 
 
 /*
-   Transforme le Markdown simple **texte**
-   en véritable texte en gras.
+   Transforme la syntaxe de mise en forme
+   utilisée dans Airtable :
+
+   **texte**   → gras
+   _texte_     → italique
+   ***texte*** → gras + italique
 
    Important :
    On échappe d'abord le HTML pour éviter
@@ -118,11 +138,45 @@ function formatText(value) {
         escapeHTML(value);
 
 
-    return safeText.replace(
-        /\*\*(.+?)\*\*/g,
-        "<strong>$1</strong>"
-    );
+    return safeText
+
+        /* -------------------------------------------------
+           GRAS + ITALIQUE
+        ------------------------------------------------- */
+
+        .replace(
+            /\*\*\*(.+?)\*\*\*/g,
+            "<strong><em>$1</em></strong>"
+        )
+
+        /* -------------------------------------------------
+           GRAS
+        ------------------------------------------------- */
+
+        .replace(
+            /\*\*(.+?)\*\*/g,
+            "<strong>$1</strong>"
+        )
+
+        /* -------------------------------------------------
+           ITALIQUE
+        ------------------------------------------------- */
+
+        .replace(
+            /_(.+?)_/g,
+            "<em>$1</em>"
+        )
+
+        /* -------------------------------------------------
+           SAUTS DE LIGNE
+        ------------------------------------------------- */
+
+        .replace(
+            /\r?\n/g,
+            "<br>"
+        );
 }
+
 
 /* =========================================================
    4. RÉCUPÉRER L'IMAGE AIRTABLE
@@ -662,15 +716,15 @@ function ouvrirInterview(record) {
     ----------------------------------------------------- */
 
     const title =
-    document.createElement("h1");
+        document.createElement("h1");
 
 
-title.className =
-    `detail-title ${categoryInfo.className}`;
+    title.className =
+        `detail-title ${categoryInfo.className}`;
 
 
-title.textContent =
-    structure;
+    title.textContent =
+        structure;
 
 
     header.appendChild(title);
@@ -804,8 +858,15 @@ title.textContent =
             "interview-person";
 
 
-        person.textContent =
-            `Interview réalisée auprès de : ${interviewPerson}`;
+        /*
+           IMPORTANT :
+           innerHTML est utilisé ici avec formatText()
+           afin de conserver le gras et l'italique
+           provenant d'Airtable.
+        */
+
+        person.innerHTML =
+            `Interview réalisée auprès de : ${formatText(interviewPerson)}`;
 
 
         interviewContent.appendChild(
@@ -879,8 +940,6 @@ title.textContent =
     ===================================================== */
 
     /*
-       IMPORTANT :
-
        La galerie reste visible derrière.
 
        La sidebar est affichée au-dessus grâce
@@ -967,8 +1026,14 @@ function ajouterSectionInterview(
         "interview-text";
 
 
+    /*
+       IMPORTANT :
+       On utilise formatText() afin de conserver
+       le gras, l'italique et les retours à la ligne.
+    */
+
     paragraph.innerHTML =
-    formatText(texte);
+        formatText(texte);
 
 
     section.appendChild(
