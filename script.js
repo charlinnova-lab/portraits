@@ -4,27 +4,18 @@
 
    Création : 24 août 2026
    Last Modification : 24 août 2026
-
-   Ce fichier :
-   1. récupère les portraits depuis Cloudflare
-   2. gère la recherche et le filtrage dynamique (catégories)
-   3. lit les paramètres d'URL venant de la frise (?cat=germe...)
-   4. affiche les cartes
-   5. gère les catégories et leurs couleurs
-   6. ouvre une interview dans une sidebar
-   7. permet de revenir à la galerie
+   Objet : interconnexion avec la frise
+   
 ========================================================= */
-
 
 /* =========================================================
    1. CONFIGURATION & VARIABLES GLOBALES
 ========================================================= */
 
-const API_URL = "https://portaitsexpo.charlottepiau-innova.workers.dev"; //[cite: 1]
+const API_URL = "https://portaitsexpo.charlottepiau-innova.workers.dev";
 
-// Stocke l'intégralité des données Airtable pour pouvoir filtrer localement
+// Stocke la totalité des cartes reçues d'Airtable
 let allPortraits = [];
-
 
 /* =========================================================
    2. CATÉGORIES
@@ -53,7 +44,6 @@ const CATEGORIES = {
     }
 };
 
-
 /* =========================================================
    3. ÉCHAPPEMENT + FORMATAGE DU TEXTE
 ========================================================= */
@@ -77,7 +67,6 @@ function formatText(value) {
         .replace(/\r?\n/g, "<br>");
 }
 
-
 /* =========================================================
    4. RÉCUPÉRER L'IMAGE AIRTABLE
 ========================================================= */
@@ -88,17 +77,13 @@ function getImageURL(fields) {
     return imageField[0]?.thumbnails?.large?.url || imageField[0]?.url || "";
 }
 
-
 /* =========================================================
    5. CHARGEMENT DES PORTRAITS
 ========================================================= */
 
 async function chargerPortraits() {
     const gallery = document.getElementById("gallery");
-    if (!gallery) {
-        console.error("Élément #gallery introuvable.");
-        return;
-    }
+    if (!gallery) return;
 
     gallery.innerHTML = `<div class="loading">Chargement des portraits…</div>`;
 
@@ -107,15 +92,12 @@ async function chargerPortraits() {
         if (!response.ok) throw new Error(`Erreur du serveur : ${response.status}`);
 
         const data = await response.json();
-        
-        // Stockage global des résultats
         allPortraits = data.records || [];
-        console.log("Portraits reçus :", allPortraits.length);
 
-        // Vérifie si la frise a transmis une catégorie en paramètre d'URL
+        // Vérifie si un filtre est présent dans l'URL (?cat=germe)
         verifierFiltreUrl();
 
-        // Filtre et affiche la galerie
+        // Filtre et affiche les cartes
         filtrerEtAfficher();
 
     } catch (error) {
@@ -129,7 +111,6 @@ async function chargerPortraits() {
     }
 }
 
-
 /* =========================================================
    6. LOGIQUE DE FILTRAGE ET RECHERCHE
 ========================================================= */
@@ -137,36 +118,29 @@ async function chargerPortraits() {
 function filtrerEtAfficher() {
     const searchInput = document.getElementById("searchInput");
     const searchVal = searchInput ? searchInput.value.toLowerCase().trim() : "";
-    
+
     const activeBtn = document.querySelector(".filter-btn.active");
     const selectedCat = activeBtn ? activeBtn.getAttribute("data-filter") : "all";
 
     const portraitsFiltres = allPortraits.filter(record => {
         const fields = record.fields || {};
 
-        // 1. Recherche Textuelle (sur le nom, résumés, etc.)
+        // Recherche textuelle globale
         const contentText = JSON.stringify(fields).toLowerCase();
         const matchesSearch = !searchVal || contentText.includes(searchVal);
 
-        // 2. Filtre de Catégorie
+        // Filtre de catégorie
         let rawCategory = fields["Category"] || fields["Catégory"] || "";
         if (Array.isArray(rawCategory)) rawCategory = rawCategory.join(" ");
         const category = rawCategory.toLowerCase();
 
         let matchesCat = false;
-        if (selectedCat === "all") {
-            matchesCat = true;
-        } else if (selectedCat === "germe" && (category.includes("germent") || category.includes("ecoles") || category.includes("écoles"))) {
-            matchesCat = true;
-        } else if (selectedCat === "grandit" && (category.includes("grandit") || category.includes("centres techniques"))) {
-            matchesCat = true;
-        } else if (selectedCat === "forme" && (category.includes("start-up") || category.includes("startup"))) {
-            matchesCat = true;
-        } else if (selectedCat === "solution" && (category.includes("solution") || category.includes("entreprises"))) {
-            matchesCat = true;
-        } else if (selectedCat === "deploie" && (category.includes("deplo") || category.includes("dynamiques collectives"))) {
-            matchesCat = true;
-        }
+        if (selectedCat === "all") matchesCat = true;
+        else if (selectedCat === "germe" && (category.includes("germent") || category.includes("ecoles") || category.includes("écoles"))) matchesCat = true;
+        else if (selectedCat === "grandit" && (category.includes("grandit") || category.includes("centres techniques"))) matchesCat = true;
+        else if (selectedCat === "forme" && (category.includes("start-up") || category.includes("startup"))) matchesCat = true;
+        else if (selectedCat === "solution" && (category.includes("solution") || category.includes("entreprises"))) matchesCat = true;
+        else if (selectedCat === "deploie" && (category.includes("deplo") || category.includes("dynamiques collectives"))) matchesCat = true;
 
         return matchesSearch && matchesCat;
     });
@@ -174,11 +148,10 @@ function filtrerEtAfficher() {
     afficherPortraits(portraitsFiltres);
 }
 
-
 function verifierFiltreUrl() {
     const urlParams = new URLSearchParams(window.location.search);
     const catParam = urlParams.get("cat");
-    
+
     if (catParam) {
         const targetBtn = document.querySelector(`.filter-btn[data-filter="${catParam}"]`);
         if (targetBtn) {
@@ -187,7 +160,6 @@ function verifierFiltreUrl() {
         }
     }
 }
-
 
 /* =========================================================
    7. AFFICHER LA GALERIE
@@ -200,11 +172,10 @@ function afficherPortraits(portraits) {
     gallery.innerHTML = "";
 
     if (portraits.length === 0) {
-        gallery.innerHTML = `<div class="no-results">Aucun portrait ne correspond à votre recherche.</div>`;
+        gallery.innerHTML = `<div class="error" style="background:transparent; text-align:center;">Aucun portrait ne correspond à votre recherche.</div>`;
         return;
     }
 
-    // Conservation de l'ordre Panel ID
     portraits.sort((a, b) => {
         const panelA = Number(a.fields?.["Panel ID"]) || 9999;
         const panelB = Number(b.fields?.["Panel ID"]) || 9999;
@@ -216,7 +187,6 @@ function afficherPortraits(portraits) {
         gallery.appendChild(card);
     });
 }
-
 
 /* =========================================================
    8. CRÉER UNE CARTE PORTRAIT
@@ -283,7 +253,6 @@ function creerCartePortrait(record) {
     return card;
 }
 
-
 /* =========================================================
    9. OUVRIR UNE INTERVIEW
 ========================================================= */
@@ -312,7 +281,6 @@ function ouvrirInterview(record) {
 
     detailContent.innerHTML = "";
 
-    // EN-TÊTE
     const header = document.createElement("header");
     header.className = "detail-header";
 
@@ -335,7 +303,6 @@ function ouvrirInterview(record) {
 
     detailContent.appendChild(header);
 
-    // GRANDE IMAGE
     if (imageURL) {
         const imageWrapper = document.createElement("div");
         imageWrapper.className = "detail-image-wrapper";
@@ -350,7 +317,6 @@ function ouvrirInterview(record) {
         detailContent.appendChild(imageWrapper);
     }
 
-    // CONTENU DES SECTIONS
     const interviewContent = document.createElement("div");
     interviewContent.className = "interview-content";
 
@@ -392,7 +358,6 @@ function ouvrirInterview(record) {
     window.scrollTo({ top: 0, behavior: "smooth" });
 }
 
-
 /* =========================================================
    10. AJOUTER UNE SECTION D'INTERVIEW
 ========================================================= */
@@ -416,7 +381,6 @@ function ajouterSectionInterview(container, titre, texte) {
     container.appendChild(section);
 }
 
-
 /* =========================================================
    11. RETOUR À LA GALERIE
 ========================================================= */
@@ -434,9 +398,8 @@ function revenirGalerie() {
     window.scrollTo({ top: 0, behavior: "smooth" });
 }
 
-
 /* =========================================================
-   12. ÉCOUTEURS D'ÉVÉNEMENTS (BOUTONS, RECHERCHE, ESC)
+   12. ÉCOUTEURS D'ÉVÉNEMENTS
 ========================================================= */
 
 document.addEventListener("keydown", event => {
@@ -447,19 +410,16 @@ document.addEventListener("keydown", event => {
 });
 
 document.addEventListener("DOMContentLoaded", () => {
-    // Bouton Retour
     const backButton = document.getElementById("back-button");
     if (backButton) {
         backButton.addEventListener("click", revenirGalerie);
     }
 
-    // Écouteur de recherche textuelle
     const searchInput = document.getElementById("searchInput");
     if (searchInput) {
         searchInput.addEventListener("input", filtrerEtAfficher);
     }
 
-    // Écouteurs des boutons de catégories
     const filterButtons = document.querySelectorAll(".filter-btn");
     filterButtons.forEach(btn => {
         btn.addEventListener("click", (e) => {
@@ -469,6 +429,5 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     });
 
-    // Lancement de la récupération
     chargerPortraits();
 });
