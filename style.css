@@ -14,21 +14,15 @@
     box-sizing: border-box;
 }
 
-
 html {
     scroll-behavior: smooth;
 }
 
-
 body {
-
     margin: 0;
     padding: 0;
-
     background: #f5f3ee;
-
     color: #333;
-
     font-family:
         Arial,
         Helvetica,
@@ -41,11 +35,8 @@ body {
 ========================================================= */
 
 main {
-
     width: min(1400px, 92%);
-
     margin: 0 auto;
-
     padding: 50px 0 80px;
 }
 
@@ -55,17 +46,13 @@ main {
 ========================================================= */
 
 #gallery {
-
     display: grid;
-
     grid-template-columns:
         repeat(
             auto-fit,
             minmax(280px, 1fr)
         );
-
     gap: 30px;
-
     transition:
         opacity 0.25s ease;
 }
@@ -76,29 +63,24 @@ main {
 ========================================================= */
 
 .portrait-card {
-
     background: #ffffff;
-
     border-radius: 28px;
-
     overflow: hidden;
-
     box-shadow:
         0 10px 30px rgba(0, 0, 0, 0.08);
-
     cursor: pointer;
-
     transition:
         transform 0.25s ease,
         box-shadow 0.25s ease;
+    
+    /* Alignement flex pour forcer le bas de carte uniforme */
+    display: flex;
+    flex-direction: column;
 }
 
-
 .portrait-card:hover {
-
     transform:
         translateY(-7px);
-
     box-shadow:
         0 18px 40px rgba(0, 0, 0, 0.14);
 }
@@ -109,13 +91,9 @@ main {
 ========================================================= */
 
 .portrait-image {
-
     width: 100%;
-
     aspect-ratio: 16 / 10;
-
     object-fit: cover;
-
     display: block;
 }
 
@@ -125,95 +103,69 @@ main {
 ========================================================= */
 
 .portrait-content {
-
     position: relative;
-
-    padding-bottom: 55px;
+    /* Marges internes : haut 24px, droite 24px, bas 60px (place pour la flèche), gauche 24px */
+    padding: 24px 24px 60px 24px;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
 }
 
-
 .portrait-title {
-
     margin: 0;
-
     font-size:
         clamp(23px, 2vw, 30px);
-
     line-height: 1.1;
-
     font-weight: 800;
 }
 
-
 .portrait-tagline {
-
     margin: 12px 0 0;
-
     font-size: 17px;
-
     line-height: 1.4;
-
     font-weight: 700;
-
     font-style: italic;
-
     color: #555;
 }
+
 
 /* =========================================================
    FLÈCHE DES PORTRAITS
 ========================================================= */
 
 .card-arrow {
-
     position: absolute;
-
     right: 24px;
-
-    bottom: 20px;
-
+    bottom: 24px;
     font-size: 24px;
-
     font-weight: 400;
-
     line-height: 1;
-
     color: #253081;
-
     transition:
         transform 0.2s ease;
 }
 
-
 .portrait-card:hover .card-arrow {
-
     transform:
         translate(4px, -4px);
 }
+
+
 /* =========================================================
    7. PASTILLE / CHAPITRE
 ========================================================= */
 
 .chapter-badge {
-
     display: inline-flex;
-
     align-items: center;
-
     justify-content: center;
-
+    align-self: flex-start;
     min-height: 42px;
-
     padding: 9px 17px;
-
     margin-bottom: 18px;
-
     border-radius: 14px;
-
     font-size: 14px;
-
     font-weight: 700;
-
     color: #222;
 }
 
@@ -223,37 +175,23 @@ main {
 ========================================================= */
 
 .category-germe {
-
-    background:
-        #FB6F92;
+    background: #FB6F92;
 }
-
 
 .category-grandit {
-
-    background:
-        #FDC500;
+    background: #FDC500;
 }
-
 
 .category-forme {
-
-    background:
-        #9BC045;
+    background: #9BC045;
 }
-
 
 .category-solution {
-
-    background:
-        #23C0F1;
+    background: #23C0F1;
 }
 
-
 .category-deploie {
-
-    background:
-        #E8873A;
+    background: #E8873A;
 }
 
 
@@ -262,16 +200,10 @@ main {
 ========================================================= */
 
 .loading {
-
-    grid-column:
-        1 / -1;
-
+    grid-column: 1 / -1;
     padding: 60px;
-
     text-align: center;
-
     font-size: 20px;
-
     font-weight: 600;
 }
 
@@ -281,18 +213,11 @@ main {
 ========================================================= */
 
 .error {
-
-    grid-column:
-        1 / -1;
-
+    grid-column: 1 / -1;
     padding: 30px;
-
     background: #ffffff;
-
     border-radius: 20px;
-
     color: #a33;
-
     font-weight: 600;
 }
 
@@ -302,48 +227,29 @@ main {
 ========================================================= */
 
 #detail {
-
     position: fixed;
-
     top: 0;
     right: 0;
-
     width: min(680px, 92vw);
-
     height: 100vh;
-
     background: #f5f3ee;
-
     z-index: 1000;
-
     overflow-y: auto;
-
     padding: 45px 50px 60px;
-
     box-shadow:
         -12px 0 45px rgba(0, 0, 0, 0.18);
-
     animation:
         detailSlideIn 0.35s ease;
 }
 
-
 @keyframes detailSlideIn {
-
     from {
-
         opacity: 0;
-
-        transform:
-            translateX(100%);
+        transform: translateX(100%);
     }
-
     to {
-
         opacity: 1;
-
-        transform:
-            translateX(0);
+        transform: translateX(0);
     }
 }
 
@@ -353,18 +259,11 @@ main {
 ========================================================= */
 
 body.detail-open::before {
-
     content: "";
-
     position: fixed;
-
     inset: 0;
-
-    background:
-        rgba(0, 0, 0, 0.35);
-
+    background: rgba(0, 0, 0, 0.35);
     z-index: 999;
-
     cursor: pointer;
 }
 
@@ -374,64 +273,42 @@ body.detail-open::before {
 ========================================================= */
 
 .back-button {
-
     position: sticky;
-
     top: 0;
-
     z-index: 10;
-
     display: inline-flex;
-
     align-items: center;
-
     border: none;
-
     background: #253081;
-
     padding: 10px 16px;
-
     margin-bottom: 30px;
-
     border-radius: 12px;
-
     font-family: inherit;
-
     font-size: 16px;
-
     font-weight: 700;
-
     color: #ffffff;
-
     cursor: pointer;
-
     box-shadow:
         0 4px 15px rgba(0, 0, 0, 0.08);
-
     transition:
         transform 0.2s ease,
         box-shadow 0.2s ease,
         background-color 0.2s ease;
 }
 
-
 .back-button:hover {
-
     background: #1d276b;
-
-    transform:
-        translateX(-4px);
-
+    transform: translateX(-4px);
     box-shadow:
         0 6px 20px rgba(0, 0, 0, 0.12);
 }
+
 
 /* =========================================================
    14. EN-TÊTE DE L'INTERVIEW
 ========================================================= */
 
 .detail-header {
-
     margin-bottom: 45px;
 }
 
@@ -441,21 +318,13 @@ body.detail-open::before {
 ========================================================= */
 
 .detail-badge {
-
     display: inline-flex;
-
     align-items: center;
-
     padding: 12px 20px;
-
     border-radius: 16px;
-
     font-size: 15px;
-
     font-weight: 700;
-
     color: #222;
-
     margin-bottom: 0;
 }
 
@@ -465,25 +334,16 @@ body.detail-open::before {
 ========================================================= */
 
 .detail-title {
-
     display: block;
-
     width: fit-content;
-
-    margin: 10px auto 0; /*centre le titre */
-
+    margin: 10px auto 0;
     padding: 14px 22px;
-
     border-radius: 18px;
-
     font-size:
         clamp(32px, 5vw, 47px);
-
     line-height: 1.05;
-
     font-weight: 900;
-   text-align: center;
-
+    text-align: center;
     color: #111;
 }
 
@@ -493,37 +353,23 @@ body.detail-open::before {
 ========================================================= */
 
 .detail-title.category-germe {
-
-    background:
-        #FB6F92;
+    background: #FB6F92;
 }
-
 
 .detail-title.category-grandit {
-
-    background:
-        #FDC500;
+    background: #FDC500;
 }
-
 
 .detail-title.category-forme {
-
-    background:
-        #9BC045;
+    background: #9BC045;
 }
-
 
 .detail-title.category-solution {
-
-    background:
-        #23C0F1;
+    background: #23C0F1;
 }
 
-
 .detail-title.category-deploie {
-
-    background:
-        #E8873A;
+    background: #E8873A;
 }
 
 
@@ -532,24 +378,15 @@ body.detail-open::before {
 ========================================================= */
 
 .detail-tagline {
-
     width: 100%;
-
     max-width: 800px;
-
     margin: 30px auto 0;
-
     font-size:
         clamp(20px, 2vw, 27px);
-
     line-height: 1.35;
-
     font-weight: 700;
-
     font-style: italic;
-
     color: #555;
-
     text-align: center;
 }
 
@@ -559,30 +396,19 @@ body.detail-open::before {
 ========================================================= */
 
 .detail-image-wrapper {
-
     width: 100%;
-
     margin: 30px 0 45px;
-
     border-radius: 24px;
-
     overflow: hidden;
-
     background: #ffffff;
-
     box-shadow:
         0 10px 30px rgba(0, 0, 0, 0.10);
 }
 
-
 .detail-image {
-
     width: 100%;
-
     max-height: 420px;
-
     object-fit: cover;
-
     display: block;
 }
 
@@ -592,9 +418,7 @@ body.detail-open::before {
 ========================================================= */
 
 .interview-content {
-
     max-width: 950px;
-
     margin: 0 auto;
 }
 
@@ -604,20 +428,14 @@ body.detail-open::before {
 ========================================================= */
 
 .interview-section {
-
     margin-bottom: 55px;
 }
 
-
 .interview-section-title {
-
     margin: 0 0 18px;
-
     font-size:
         clamp(24px, 3vw, 34px);
-
     line-height: 1.15;
-
     font-weight: 800;
 }
 
@@ -627,16 +445,11 @@ body.detail-open::before {
 ========================================================= */
 
 .interview-text {
-
     margin: 0;
-
     font-size:
         clamp(17px, 1.6vw, 20px);
-
     line-height: 1.7;
-
     text-align: justify;
-
     color: #444;
 }
 
@@ -648,31 +461,23 @@ body.detail-open::before {
 /* Gras */
 .interview-text strong,
 .interview-text b {
-
     font-weight: 800;
-
     color: #222;
 }
-
 
 /* Italique */
 .interview-text em,
 .interview-text i {
-
     font-style: italic;
 }
-
 
 /* Gras + italique */
 .interview-text strong em,
 .interview-text em strong,
 .interview-text b i,
 .interview-text i b {
-
     font-weight: 800;
-
     font-style: italic;
-
     color: #222;
 }
 
@@ -682,58 +487,39 @@ body.detail-open::before {
 ========================================================= */
 
 .interview-person {
-
     margin-top: 15px;
-
     font-size: 16px;
-
     font-style: italic;
-
     line-height: 1.5;
-
     color: #666;
 }
 
-
-/* Respect du gras dans le nom de la personne */
 .interview-person strong,
 .interview-person b {
-
     font-weight: 800;
-
     color: #222;
 }
+
 
 /* =========================================================
    25. RESSOURCES COMPLÉMENTAIRES
 ========================================================= */
 
 .detail-resources {
-
     margin-top: 60px;
-
     padding: 30px;
-
     background: #ffffff;
-
     border-radius: 24px;
 }
 
-
 .detail-resources-title {
-
     margin: 0 0 15px;
-
     font-size: 24px;
-
     font-weight: 800;
 }
 
-
 .detail-resources strong {
-
     font-weight: 800;
-
     color: #222;
 }
 
@@ -743,11 +529,8 @@ body.detail-open::before {
 ========================================================= */
 
 .photo-credit {
-
     margin-top: 15px;
-
     font-size: 13px;
-
     color: #777;
 }
 
@@ -759,86 +542,48 @@ body.detail-open::before {
 @media (max-width: 700px) {
 
     main {
-
         width: 90%;
-
         padding-top: 30px;
     }
 
-
     #gallery {
-
-        grid-template-columns:
-            1fr;
-
+        grid-template-columns: 1fr;
         gap: 22px;
     }
 
-
     .portrait-card {
-
         border-radius: 22px;
     }
 
-
-    /* -----------------------------------------------------
-       SIDEBAR MOBILE
-    ----------------------------------------------------- */
-
+    /* SIDEBAR MOBILE */
     #detail {
-
         width: 100vw;
-
-        padding:
-            30px 25px 50px;
+        padding: 30px 25px 50px;
     }
 
-
-    /* -----------------------------------------------------
-       TITRE MOBILE
-    ----------------------------------------------------- */
-
+    /* TITRE MOBILE */
     .detail-title {
-
         font-size: 38px;
-
-        padding:
-            12px 18px;
+        padding: 12px 18px;
     }
 
-
-    /* -----------------------------------------------------
-       IMAGE MOBILE
-    ----------------------------------------------------- */
-
+    /* IMAGE MOBILE */
     .detail-image-wrapper {
-
         margin-top: 25px;
-
         border-radius: 18px;
     }
 
-
     .detail-image {
-
         max-height: 400px;
     }
 
-
-    /* -----------------------------------------------------
-       INTERVIEW MOBILE
-    ----------------------------------------------------- */
-
+    /* INTERVIEW MOBILE */
     .interview-section {
-
         margin-bottom: 40px;
     }
 
-
     .interview-text {
-
         text-align: left;
-
         line-height: 1.6;
     }
 }
