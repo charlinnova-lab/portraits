@@ -278,58 +278,64 @@
     </section>
 
     <script>
-        const API_URL = "https://portaitsexpo.charlottepiau-innova.workers.dev";
+    const API_URL = "https://portaitsexpo.charlottepiau-innova.workers.dev";
 
-        async function updateCategoryCounts() {
-            try {
-                const response = await fetch(API_URL);
-                const data = await response.json();
+    async function updateCategoryCounts() {
+        try {
+            const response = await fetch(API_URL);
+            const data = await response.json();
+            
+            // Récupère la liste des éléments
+            const items = data.records || (Array.isArray(data) ? data : []);
+
+            const counts = {
+                germe: 0,
+                grandit: 0,
+                forme: 0,
+                solution: 0,
+                deploie: 0
+            };
+
+            items.forEach(item => {
+                const fields = item.fields || item;
                 
-                // Récupérer la liste des fiches/portraits (s'adapte à data.records ou data directement)
-                const items = data.records || data;
+                // Récupération du champ Category (avec sécurité si majuscule/minuscule)
+                const rawCategory = fields.Category || fields.category || "";
+                
+                // passage en minuscules pour faciliter le test
+                const category = rawCategory.toLowerCase();
 
-                // Compteur par catégorie
-                const counts = {
-                    germe: 0,
-                    grandit: 0,
-                    forme: 0,
-                    solution: 0,
-                    deploie: 0
-                };
+                // Test basé sur les mots-clés uniques de tes phrases Airtable
+                if (category.includes("germent")) {
+                    counts.germe++;
+                } else if (category.includes("grandit")) {
+                    counts.grandit++;
+                } else if (category.includes("forme")) {
+                    counts.forme++;
+                } else if (category.includes("solution")) {
+                    counts.solution++;
+                } else if (category.includes("déploit") || category.includes("deploit") || category.includes("déploie") || category.includes("deploie")) {
+                    counts.deploie++;
+                }
+            });
 
-                // Normaliser et compter
-                items.forEach(item => {
-                    const fields = item.fields || item;
-                    // Récupère le champ catégorie ou chapitre
-                    const rawCategory = fields.Categorie || fields.category || fields.Chapitre || "";
-                    const category = rawCategory.toLowerCase();
-
-                    if (category.includes("germe")) counts.germe++;
-                    else if (category.includes("grandit")) counts.grandit++;
-                    else if (category.includes("forme")) counts.forme++;
-                    else if (category.includes("solution")) counts.solution++;
-                    else if (category.includes("deploie") || category.includes("déploie")) counts.deploie++;
-                });
-
-                // Mettre à jour le DOM
-                document.querySelectorAll('.idea-step').forEach(step => {
-                    const catKey = step.getAttribute('data-category');
-                    if (catKey && counts[catKey] !== undefined) {
-                        const countEl = step.querySelector('.count-value');
-                        if (countEl) {
-                            countEl.textContent = counts[catKey];
-                        }
+            // Mise à jour de l'affichage sur la frise
+            document.querySelectorAll('.idea-step').forEach(step => {
+                const catKey = step.getAttribute('data-category');
+                if (catKey && counts[catKey] !== undefined) {
+                    const countEl = step.querySelector('.count-value');
+                    if (countEl) {
+                        countEl.textContent = counts[catKey];
                     }
-                });
+                }
+            });
 
-            } catch (error) {
-                console.error("Erreur lors de la récupération des catégories :", error);
-            }
+        } catch (error) {
+            console.error("Erreur lors du calcul des catégories :", error);
         }
+    }
 
-        // Lancer la mise à jour au chargement
-        document.addEventListener("DOMContentLoaded", updateCategoryCounts);
-    </script>
-
+    document.addEventListener("DOMContentLoaded", updateCategoryCounts);
+</script>
 </body>
 </html>
