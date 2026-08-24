@@ -210,53 +210,49 @@
         </div>
     </section>
 
-  <script>
-    const API_URL = "https://portaitsexpo.charlottepiau-innova.workers.dev";
-    // URL de ta page principale (change-la si c'est l'URL de ton site WordPress !)
-    const GALLERY_BASE_URL = "https://charlinnova-lab.github.io/portraits/"; 
+    <script>
+        const API_URL = "https://portaitsexpo.charlottepiau-innova.workers.dev";
 
-    async function updateCategoryCounts() {
-        try {
-            const response = await fetch(API_URL);
-            const data = await response.json();
-            const items = data.records || (Array.isArray(data) ? data : []);
+        async function updateCategoryCounts() {
+            try {
+                const response = await fetch(API_URL);
+                const data = await response.json();
+                const items = data.records || (Array.isArray(data) ? data : []);
 
-            const counts = { germe: 0, grandit: 0, forme: 0, solution: 0, deploie: 0 };
+                const counts = { germe: 0, grandit: 0, forme: 0, solution: 0, deploie: 0 };
 
-            items.forEach(item => {
-                const fields = item.fields || item;
-                let rawCategory = fields.Category || fields.category || "";
-                if (Array.isArray(rawCategory)) rawCategory = rawCategory.join(" ");
-                const category = rawCategory.toLowerCase();
+                items.forEach(item => {
+                    const fields = item.fields || item;
+                    let rawCategory = fields.Category || fields.category || "";
+                    if (Array.isArray(rawCategory)) rawCategory = rawCategory.join(" ");
+                    const category = rawCategory.toLowerCase();
 
-                if (category.includes("germent") || category.includes("ecoles") || category.includes("écoles")) counts.germe++;
-                else if (category.includes("grandit") || category.includes("centres techniques")) counts.grandit++;
-                else if (category.includes("start-up") || category.includes("startup")) counts.forme++;
-                else if (category.includes("solution") || category.includes("entreprises")) counts.solution++;
-                else if (category.includes("deplo") || category.includes("dynamiques collectives")) counts.deploie++;
-            });
+                    if (category.includes("germent") || category.includes("ecoles") || category.includes("écoles")) counts.germe++;
+                    else if (category.includes("grandit") || category.includes("centres techniques")) counts.grandit++;
+                    else if (category.includes("start-up") || category.includes("startup")) counts.forme++;
+                    else if (category.includes("solution") || category.includes("entreprises")) counts.solution++;
+                    else if (category.includes("deplo") || category.includes("dynamiques collectives")) counts.deploie++;
+                });
 
-            document.querySelectorAll('.idea-step').forEach(step => {
-                const catKey = step.getAttribute('data-category');
-                if (catKey && counts[catKey] !== undefined) {
-                    const countEl = step.querySelector('.count-value');
-                    if (countEl) countEl.textContent = counts[catKey];
-                    
-                    // Rend la carte cliquable et ouvre la galerie filtrée (sur le parent de l'iframe si dans WP)
-                   step.addEventListener('click', () => {
-    // 1. Envoie un message à la page parente (WordPress)
-    window.parent.postMessage({ type: 'FILTER_GALLERY', category: catKey }, '*');
-    
-    // 2. Si l'iframe de la galerie est sur une autre page, conserve la redirection classique :
-    // window.top.location.href = `${GALLERY_BASE_URL}?cat=${catKey}`;
-});
-                }
-            });
+                document.querySelectorAll('.idea-step').forEach(step => {
+                    const catKey = step.getAttribute('data-category');
+                    if (catKey && counts[catKey] !== undefined) {
+                        const countEl = step.querySelector('.count-value');
+                        if (countEl) countEl.textContent = counts[catKey];
+                        
+                        // Transmet l'ordre de filtrage au parent WordPress
+                        step.addEventListener('click', () => {
+                            window.parent.postMessage({ type: 'FILTER_GALLERY', category: catKey }, '*');
+                        });
+                    }
+                });
 
-        } catch (error) {
-            console.error("Erreur lors du calcul des catégories :", error);
+            } catch (error) {
+                console.error("Erreur lors du calcul des catégories :", error);
+            }
         }
-    }
 
-    document.addEventListener("DOMContentLoaded", updateCategoryCounts);
-</script>
+        document.addEventListener("DOMContentLoaded", updateCategoryCounts);
+    </script>
+</body>
+</html>
