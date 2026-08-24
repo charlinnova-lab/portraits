@@ -243,14 +243,13 @@
                     if (countEl) countEl.textContent = counts[catKey];
                     
                     // Rend la carte cliquable et ouvre la galerie filtrée (sur le parent de l'iframe si dans WP)
-                    step.addEventListener('click', () => {
-                        const targetUrl = `${GALLERY_BASE_URL}?cat=${catKey}`;
-                        if (window.top !== window.self) {
-                            window.top.location.href = targetUrl; // Redirige la page entière si dans un iframe
-                        } else {
-                            window.location.href = targetUrl;
-                        }
-                    });
+                   step.addEventListener('click', () => {
+    // 1. Envoie un message à la page parente (WordPress)
+    window.parent.postMessage({ type: 'FILTER_GALLERY', category: catKey }, '*');
+    
+    // 2. Si l'iframe de la galerie est sur une autre page, conserve la redirection classique :
+    // window.top.location.href = `${GALLERY_BASE_URL}?cat=${catKey}`;
+});
                 }
             });
 
