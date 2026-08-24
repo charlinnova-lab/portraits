@@ -355,9 +355,10 @@ body.detail-open::before {
     align-items: center;
 
     border: none;
-
+   background-color: #253081;
     background: #ffffff;
-
+ border: none;
+   
     padding: 10px 16px;
 
     margin-bottom: 30px;
