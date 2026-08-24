@@ -6,26 +6,24 @@
    Last Modification : 24 août 2026
 
    Ce fichier :
-
    1. récupère les portraits depuis Cloudflare
-   2. affiche les cartes
-   3. gère les catégories et leurs couleurs
-   4. ouvre une interview dans une sidebar
-   5. permet de revenir à la galerie
-   6. affiche une flèche ↗ sur les cartes
-
-   IMPORTANT :
-   Le token Airtable n'est JAMAIS présent ici.
-   Il est conservé comme secret dans Cloudflare.
+   2. gère la recherche et le filtrage dynamique (catégories)
+   3. lit les paramètres d'URL venant de la frise (?cat=germe...)
+   4. affiche les cartes
+   5. gère les catégories et leurs couleurs
+   6. ouvre une interview dans une sidebar
+   7. permet de revenir à la galerie
 ========================================================= */
 
 
 /* =========================================================
-   1. CONFIGURATION
+   1. CONFIGURATION & VARIABLES GLOBALES
 ========================================================= */
 
-const API_URL =
-    "https://portaitsexpo.charlottepiau-innova.workers.dev";
+const API_URL = "https://portaitsexpo.charlottepiau-innova.workers.dev"; //[cite: 1]
+
+// Stocke l'intégralité des données Airtable pour pouvoir filtrer localement
+let allPortraits = [];
 
 
 /* =========================================================
@@ -33,43 +31,24 @@ const API_URL =
 ========================================================= */
 
 const CATEGORIES = {
-
     "Là où les idées germent : écoles & laboratoires": {
-
         label: "L’idée germe",
-
         className: "category-germe"
     },
-
-
     "Là où l’idée grandit et est testées : centres techniques & dispositifs d’accompagnement": {
-
         label: "L’idée grandit",
-
         className: "category-grandit"
     },
-
-
     "Là où l’idée prend forme : start-up": {
-
         label: "L’idée prend forme",
-
         className: "category-forme"
     },
-
-
     "Là où l’idée se transforme en solution : entreprises": {
-
         label: "L’idée devient une solution",
-
         className: "category-solution"
     },
-
-
     "Là où l’idée se déploit : dynamiques collectives": {
-
         label: "L’idée se déploie",
-
         className: "category-deploie"
     }
 };
@@ -80,84 +59,22 @@ const CATEGORIES = {
 ========================================================= */
 
 function escapeHTML(value) {
-
-    if (
-        value === null ||
-        value === undefined
-    ) {
-
-        return "";
-    }
-
-
+    if (value === null || value === undefined) return "";
     return String(value)
-
-        .replace(
-            /&/g,
-            "&amp;"
-        )
-
-        .replace(
-            /</g,
-            "&lt;"
-        )
-
-        .replace(
-            />/g,
-            "&gt;"
-        )
-
-        .replace(
-            /"/g,
-            "&quot;"
-        )
-
-        .replace(
-            /'/g,
-            "&#039;"
-        );
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
 }
 
-
-/*
-   Transforme la syntaxe utilisée dans Airtable :
-
-   **texte**   → gras
-   _texte_     → italique
-   ***texte*** → gras + italique
-*/
-
 function formatText(value) {
-
-    const safeText =
-        escapeHTML(value);
-
-
+    const safeText = escapeHTML(value);
     return safeText
-
-        /* Gras + italique */
-        .replace(
-            /\*\*\*(.+?)\*\*\*/g,
-            "<strong><em>$1</em></strong>"
-        )
-
-        /* Gras */
-        .replace(
-            /\*\*(.+?)\*\*/g,
-            "<strong>$1</strong>"
-        )
-
-        /* Italique */
-        .replace(
-            /_(.+?)_/g,
-            "<em>$1</em>"
-        )
-
-        /* Sauts de ligne */
-        .replace(
-            /\r?\n/g,
-            "<br>"
-        );
+        .replace(/\*\*\*(.+?)\*\*\*/g, "<strong><em>$1</em></strong>")
+        .replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>")
+        .replace(/_(.+?)_/g, "<em>$1</em>")
+        .replace(/\r?\n/g, "<br>");
 }
 
 
@@ -166,28 +83,9 @@ function formatText(value) {
 ========================================================= */
 
 function getImageURL(fields) {
-
-    const imageField =
-        fields["Visuel"];
-
-
-    if (
-        !Array.isArray(imageField) ||
-        imageField.length === 0
-    ) {
-
-        return "";
-    }
-
-
-    return (
-
-        imageField[0]?.thumbnails?.large?.url ||
-
-        imageField[0]?.url ||
-
-        ""
-    );
+    const imageField = fields["Visuel"];
+    if (!Array.isArray(imageField) || imageField.length === 0) return "";
+    return imageField[0]?.thumbnails?.large?.url || imageField[0]?.url || "";
 }
 
 
@@ -196,71 +94,35 @@ function getImageURL(fields) {
 ========================================================= */
 
 async function chargerPortraits() {
-
-    const gallery =
-        document.getElementById("gallery");
-
-
+    const gallery = document.getElementById("gallery");
     if (!gallery) {
-
-        console.error(
-            "Élément #gallery introuvable."
-        );
-
+        console.error("Élément #gallery introuvable.");
         return;
     }
 
-
-    gallery.innerHTML = `
-        <div class="loading">
-            Chargement des portraits…
-        </div>
-    `;
-
+    gallery.innerHTML = `<div class="loading">Chargement des portraits…</div>`;
 
     try {
+        const response = await fetch(API_URL);
+        if (!response.ok) throw new Error(`Erreur du serveur : ${response.status}`);
 
-        const response =
-            await fetch(API_URL);
+        const data = await response.json();
+        
+        // Stockage global des résultats
+        allPortraits = data.records || [];
+        console.log("Portraits reçus :", allPortraits.length);
 
+        // Vérifie si la frise a transmis une catégorie en paramètre d'URL
+        verifierFiltreUrl();
 
-        if (!response.ok) {
-
-            throw new Error(
-                `Erreur du serveur : ${response.status}`
-            );
-        }
-
-
-        const data =
-            await response.json();
-
-
-        const portraits =
-            data.records || [];
-
-
-        console.log(
-            "Portraits reçus :",
-            portraits.length
-        );
-
-
-        afficherPortraits(portraits);
-
+        // Filtre et affiche la galerie
+        filtrerEtAfficher();
 
     } catch (error) {
-
-        console.error(
-            "Erreur lors du chargement :",
-            error
-        );
-
-
+        console.error("Erreur lors du chargement :", error);
         gallery.innerHTML = `
             <div class="error">
-                Impossible de charger les portraits.
-                <br>
+                Impossible de charger les portraits.<br>
                 Veuillez réessayer dans quelques instants.
             </div>
         `;
@@ -269,861 +131,344 @@ async function chargerPortraits() {
 
 
 /* =========================================================
-   6. AFFICHER LA GALERIE
+   6. LOGIQUE DE FILTRAGE ET RECHERCHE
 ========================================================= */
 
-function afficherPortraits(portraits) {
+function filtrerEtAfficher() {
+    const searchInput = document.getElementById("searchInput");
+    const searchVal = searchInput ? searchInput.value.toLowerCase().trim() : "";
+    
+    const activeBtn = document.querySelector(".filter-btn.active");
+    const selectedCat = activeBtn ? activeBtn.getAttribute("data-filter") : "all";
 
-    const gallery =
-        document.getElementById("gallery");
+    const portraitsFiltres = allPortraits.filter(record => {
+        const fields = record.fields || {};
+
+        // 1. Recherche Textuelle (sur le nom, résumés, etc.)
+        const contentText = JSON.stringify(fields).toLowerCase();
+        const matchesSearch = !searchVal || contentText.includes(searchVal);
+
+        // 2. Filtre de Catégorie
+        let rawCategory = fields["Category"] || fields["Catégory"] || "";
+        if (Array.isArray(rawCategory)) rawCategory = rawCategory.join(" ");
+        const category = rawCategory.toLowerCase();
+
+        let matchesCat = false;
+        if (selectedCat === "all") {
+            matchesCat = true;
+        } else if (selectedCat === "germe" && (category.includes("germent") || category.includes("ecoles") || category.includes("écoles"))) {
+            matchesCat = true;
+        } else if (selectedCat === "grandit" && (category.includes("grandit") || category.includes("centres techniques"))) {
+            matchesCat = true;
+        } else if (selectedCat === "forme" && (category.includes("start-up") || category.includes("startup"))) {
+            matchesCat = true;
+        } else if (selectedCat === "solution" && (category.includes("solution") || category.includes("entreprises"))) {
+            matchesCat = true;
+        } else if (selectedCat === "deploie" && (category.includes("deplo") || category.includes("dynamiques collectives"))) {
+            matchesCat = true;
+        }
+
+        return matchesSearch && matchesCat;
+    });
+
+    afficherPortraits(portraitsFiltres);
+}
 
 
-    if (!gallery) {
-
-        return;
+function verifierFiltreUrl() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const catParam = urlParams.get("cat");
+    
+    if (catParam) {
+        const targetBtn = document.querySelector(`.filter-btn[data-filter="${catParam}"]`);
+        if (targetBtn) {
+            document.querySelectorAll(".filter-btn").forEach(btn => btn.classList.remove("active"));
+            targetBtn.classList.add("active");
+        }
     }
-
-
-    gallery.innerHTML = "";
-
-
-    /*
-       On conserve l'ordre défini par Panel ID.
-    */
-
-    portraits.sort(
-        (a, b) => {
-
-            const panelA =
-                Number(
-                    a.fields?.["Panel ID"]
-                ) || 9999;
-
-
-            const panelB =
-                Number(
-                    b.fields?.["Panel ID"]
-                ) || 9999;
-
-
-            return panelA - panelB;
-        }
-    );
-
-
-    portraits.forEach(
-        portrait => {
-
-            const card =
-                creerCartePortrait(
-                    portrait
-                );
-
-
-            gallery.appendChild(card);
-        }
-    );
 }
 
 
 /* =========================================================
-   7. CRÉER UNE CARTE PORTRAIT
+   7. AFFICHER LA GALERIE
+========================================================= */
+
+function afficherPortraits(portraits) {
+    const gallery = document.getElementById("gallery");
+    if (!gallery) return;
+
+    gallery.innerHTML = "";
+
+    if (portraits.length === 0) {
+        gallery.innerHTML = `<div class="no-results">Aucun portrait ne correspond à votre recherche.</div>`;
+        return;
+    }
+
+    // Conservation de l'ordre Panel ID
+    portraits.sort((a, b) => {
+        const panelA = Number(a.fields?.["Panel ID"]) || 9999;
+        const panelB = Number(b.fields?.["Panel ID"]) || 9999;
+        return panelA - panelB;
+    });
+
+    portraits.forEach(portrait => {
+        const card = creerCartePortrait(portrait);
+        gallery.appendChild(card);
+    });
+}
+
+
+/* =========================================================
+   8. CRÉER UNE CARTE PORTRAIT
 ========================================================= */
 
 function creerCartePortrait(record) {
+    const fields = record.fields || {};
+    const structure = fields["Structure"] || "Structure";
+    const category = fields["Category"] || fields["Catégory"] || "";
+    const tagline = fields["Un mot pour vous résumer ?"] || "";
+    const categoryInfo = CATEGORIES[category] || { label: "L’innovation", className: "" };
+    const imageURL = getImageURL(fields);
 
-    const fields =
-        record.fields || {};
-
-
-    const structure =
-        fields["Structure"] ||
-        "Structure";
-
-
-    const category =
-        fields["Category"] ||
-        fields["Catégory"] ||
-        "";
-
-
-    const tagline =
-        fields[
-            "Un mot pour vous résumer ?"
-        ] || "";
-
-
-    const categoryInfo =
-        CATEGORIES[category] || {
-
-            label: "L’innovation",
-
-            className: ""
-        };
-
-
-    const imageURL =
-        getImageURL(fields);
-
-
-    const card =
-        document.createElement("article");
-
-
-    card.className =
-        "portrait-card";
-
-
-    card.setAttribute(
-        "tabindex",
-        "0"
-    );
-
-
-    card.setAttribute(
-        "role",
-        "button"
-    );
-
-
-    /* -----------------------------------------------------
-       IMAGE
-    ----------------------------------------------------- */
+    const card = document.createElement("article");
+    card.className = "portrait-card";
+    card.setAttribute("tabindex", "0");
+    card.setAttribute("role", "button");
 
     if (imageURL) {
-
-        const image =
-            document.createElement("img");
-
-
-        image.className =
-            "portrait-image";
-
-
-        image.src =
-            imageURL;
-
-
-        image.alt =
-            structure;
-
-
-        image.loading =
-            "lazy";
-
-
+        const image = document.createElement("img");
+        image.className = "portrait-image";
+        image.src = imageURL;
+        image.alt = structure;
+        image.loading = "lazy";
         card.appendChild(image);
     }
 
+    const content = document.createElement("div");
+    content.className = "portrait-content";
 
-    /* -----------------------------------------------------
-       CONTENU
-    ----------------------------------------------------- */
-
-    const content =
-        document.createElement("div");
-
-
-    content.className =
-        "portrait-content";
-
-
-    /* -----------------------------------------------------
-       PASTILLE / CHAPITRE
-    ----------------------------------------------------- */
-
-    const badge =
-        document.createElement("div");
-
-
-    badge.className =
-        `chapter-badge ${categoryInfo.className}`;
-
-
-    badge.textContent =
-        categoryInfo.label;
-
-
+    const badge = document.createElement("div");
+    badge.className = `chapter-badge ${categoryInfo.className}`;
+    badge.textContent = categoryInfo.label;
     content.appendChild(badge);
 
-
-    /* -----------------------------------------------------
-       TITRE
-    ----------------------------------------------------- */
-
-    const title =
-        document.createElement("h2");
-
-
-    title.className =
-        "portrait-title";
-
-
-    title.textContent =
-        structure;
-
-
+    const title = document.createElement("h2");
+    title.className = "portrait-title";
+    title.textContent = structure;
     content.appendChild(title);
 
-
-    /* -----------------------------------------------------
-       TAGLINE
-    ----------------------------------------------------- */
-
     if (tagline) {
-
-        const taglineElement =
-            document.createElement("p");
-
-
-        taglineElement.className =
-            "portrait-tagline";
-
-
-        taglineElement.textContent =
-            tagline;
-
-
-        content.appendChild(
-            taglineElement
-        );
+        const taglineElement = document.createElement("p");
+        taglineElement.className = "portrait-tagline";
+        taglineElement.textContent = tagline;
+        content.appendChild(taglineElement);
     }
 
-
-    /* -----------------------------------------------------
-       FLÈCHE
-    ----------------------------------------------------- */
-
-    const arrow =
-        document.createElement("span");
-
-
-    arrow.className =
-        "card-arrow";
-
-
-    arrow.setAttribute(
-        "aria-hidden",
-        "true"
-    );
-
-
-    arrow.textContent =
-        "↗";
-
-
-    content.appendChild(
-        arrow
-    );
-
+    const arrow = document.createElement("span");
+    arrow.className = "card-arrow";
+    arrow.setAttribute("aria-hidden", "true");
+    arrow.textContent = "↗";
+    content.appendChild(arrow);
 
     card.appendChild(content);
 
-
-    /* -----------------------------------------------------
-       CLIC
-    ----------------------------------------------------- */
-
-    card.addEventListener(
-        "click",
-        () => {
-
+    card.addEventListener("click", () => ouvrirInterview(record));
+    card.addEventListener("keydown", event => {
+        if (event.key === "Enter" || event.key === " ") {
+            event.preventDefault();
             ouvrirInterview(record);
         }
-    );
-
-
-    /* -----------------------------------------------------
-       CLAVIER
-    ----------------------------------------------------- */
-
-    card.addEventListener(
-        "keydown",
-        event => {
-
-            if (
-                event.key === "Enter" ||
-                event.key === " "
-            ) {
-
-                event.preventDefault();
-
-                ouvrirInterview(record);
-            }
-        }
-    );
-
+    });
 
     return card;
 }
 
 
 /* =========================================================
-   8. OUVRIR UNE INTERVIEW
+   9. OUVRIR UNE INTERVIEW
 ========================================================= */
 
 function ouvrirInterview(record) {
+    const fields = record.fields || {};
+    const gallery = document.getElementById("gallery");
+    const detail = document.getElementById("detail");
+    const detailContent = document.getElementById("detail-content");
 
-    const fields =
-        record.fields || {};
+    if (!gallery || !detail || !detailContent) return;
 
+    const structure = fields["Structure"] || "Structure";
+    const category = fields["Category"] || fields["Catégory"] || "";
+    const tagline = fields["Un mot pour vous résumer ?"] || "";
+    const genesis = fields["Genèse & Inspiration"] || "";
+    const collaboration = fields["Collaborations & Écosystème"] || "";
+    const transformation = fields["Transformation & Défis"] || "";
+    const perspectives = fields["Perspectives"] || "";
+    const interviewPerson = fields["Interview réalisée auprès de"] || "";
+    const photoCredit = fields["Photo"] || fields["Photo credits"] || fields["Photo Credits"] || "";
+    const addedInfos = fields["Added_infos"] || "";
+    const imageURL = getImageURL(fields);
 
-    const gallery =
-        document.getElementById("gallery");
-
-
-    const detail =
-        document.getElementById("detail");
-
-
-    const detailContent =
-        document.getElementById(
-            "detail-content"
-        );
-
-
-    if (
-        !gallery ||
-        !detail ||
-        !detailContent
-    ) {
-
-        console.error(
-            "Éléments nécessaires à la sidebar introuvables."
-        );
-
-        return;
-    }
-
-
-    /* -----------------------------------------------------
-       RÉCUPÉRATION DES DONNÉES
-    ----------------------------------------------------- */
-
-    const structure =
-        fields["Structure"] ||
-        "Structure";
-
-
-    const category =
-        fields["Category"] ||
-        fields["Catégory"] ||
-        "";
-
-
-    const tagline =
-        fields[
-            "Un mot pour vous résumer ?"
-        ] || "";
-
-
-    const genesis =
-        fields[
-            "Genèse & Inspiration"
-        ] || "";
-
-
-    const collaboration =
-        fields[
-            "Collaborations & Écosystème"
-        ] || "";
-
-
-    const transformation =
-        fields[
-            "Transformation & Défis"
-        ] || "";
-
-
-    const perspectives =
-        fields[
-            "Perspectives"
-        ] || "";
-
-
-    const interviewPerson =
-        fields[
-            "Interview réalisée auprès de"
-        ] || "";
-
-
-    const photoCredit =
-        fields["Photo"] ||
-        fields["Photo credits"] ||
-        fields["Photo Credits"] ||
-        "";
-
-
-    const addedInfos =
-        fields[
-            "Added_infos"
-        ] || "";
-
-
-    const imageURL =
-        getImageURL(fields);
-
-
-    const categoryInfo =
-        CATEGORIES[category] || {
-
-            label: "L’innovation",
-
-            className: ""
-        };
-
-
-    /* -----------------------------------------------------
-       CONSTRUCTION DE L'INTERVIEW
-    ----------------------------------------------------- */
+    const categoryInfo = CATEGORIES[category] || { label: "L’innovation", className: "" };
 
     detailContent.innerHTML = "";
 
+    // EN-TÊTE
+    const header = document.createElement("header");
+    header.className = "detail-header";
 
-    /* =====================================================
-       EN-TÊTE
-    ===================================================== */
-
-    const header =
-        document.createElement("header");
-
-
-    header.className =
-        "detail-header";
-
-
-    /* -----------------------------------------------------
-       PASTILLE
-    ----------------------------------------------------- */
-
-    const badge =
-        document.createElement("div");
-
-
-    badge.className =
-        `detail-badge ${categoryInfo.className}`;
-
-
-    badge.textContent =
-        categoryInfo.label;
-
-
+    const badge = document.createElement("div");
+    badge.className = `detail-badge ${categoryInfo.className}`;
+    badge.textContent = categoryInfo.label;
     header.appendChild(badge);
 
-
-    /* -----------------------------------------------------
-       TITRE
-    ----------------------------------------------------- */
-
-    const title =
-        document.createElement("h1");
-
-
-    title.className =
-        `detail-title ${categoryInfo.className}`;
-
-
-    title.textContent =
-        structure;
-
-
+    const title = document.createElement("h1");
+    title.className = `detail-title ${categoryInfo.className}`;
+    title.textContent = structure;
     header.appendChild(title);
 
-
-    /* -----------------------------------------------------
-       TAGLINE
-    ----------------------------------------------------- */
-
     if (tagline) {
-
-        const taglineElement =
-            document.createElement("p");
-
-
-        taglineElement.className =
-            "detail-tagline";
-
-
-        taglineElement.textContent =
-            tagline;
-
-
-        header.appendChild(
-            taglineElement
-        );
+        const taglineElement = document.createElement("p");
+        taglineElement.className = "detail-tagline";
+        taglineElement.textContent = tagline;
+        header.appendChild(taglineElement);
     }
 
+    detailContent.appendChild(header);
 
-    detailContent.appendChild(
-        header
-    );
-
-
-    /* =====================================================
-       GRANDE IMAGE
-    ===================================================== */
-
+    // GRANDE IMAGE
     if (imageURL) {
+        const imageWrapper = document.createElement("div");
+        imageWrapper.className = "detail-image-wrapper";
 
-        const imageWrapper =
-            document.createElement("div");
+        const image = document.createElement("img");
+        image.className = "detail-image";
+        image.src = imageURL;
+        image.alt = structure;
+        image.loading = "eager";
 
-
-        imageWrapper.className =
-            "detail-image-wrapper";
-
-
-        const image =
-            document.createElement("img");
-
-
-        image.className =
-            "detail-image";
-
-
-        image.src =
-            imageURL;
-
-
-        image.alt =
-            structure;
-
-
-        image.loading =
-            "eager";
-
-
-        imageWrapper.appendChild(
-            image
-        );
-
-
-        detailContent.appendChild(
-            imageWrapper
-        );
+        imageWrapper.appendChild(image);
+        detailContent.appendChild(imageWrapper);
     }
 
+    // CONTENU DES SECTIONS
+    const interviewContent = document.createElement("div");
+    interviewContent.className = "interview-content";
 
-    /* =====================================================
-       CONTENU DES 4 PARTIES
-    ===================================================== */
-
-    const interviewContent =
-        document.createElement("div");
-
-
-    interviewContent.className =
-        "interview-content";
-
-
-    ajouterSectionInterview(
-        interviewContent,
-        "Genèse & Inspiration",
-        genesis
-    );
-
-
-    ajouterSectionInterview(
-        interviewContent,
-        "Collaborations & Écosystème",
-        collaboration
-    );
-
-
-    ajouterSectionInterview(
-        interviewContent,
-        "Transformation & Défis",
-        transformation
-    );
-
-
-    ajouterSectionInterview(
-        interviewContent,
-        "Perspectives",
-        perspectives
-    );
-
-
-    /* =====================================================
-       PERSONNE INTERVIEWÉE
-    ===================================================== */
+    ajouterSectionInterview(interviewContent, "Genèse & Inspiration", genesis);
+    ajouterSectionInterview(interviewContent, "Collaborations & Écosystème", collaboration);
+    ajouterSectionInterview(interviewContent, "Transformation & Défis", transformation);
+    ajouterSectionInterview(interviewContent, "Perspectives", perspectives);
 
     if (interviewPerson) {
-
-        const person =
-            document.createElement("p");
-
-
-        person.className =
-            "interview-person";
-
-
-        person.innerHTML =
-            `Interview réalisée auprès de : ${formatText(interviewPerson)}`;
-
-
-        interviewContent.appendChild(
-            person
-        );
+        const person = document.createElement("p");
+        person.className = "interview-person";
+        person.innerHTML = `Interview réalisée auprès de : ${formatText(interviewPerson)}`;
+        interviewContent.appendChild(person);
     }
-
-
-    /* =====================================================
-       CRÉDIT PHOTO
-    ===================================================== */
 
     if (photoCredit) {
-
-        const credit =
-            document.createElement("p");
-
-
-        credit.className =
-            "photo-credit";
-
-
-        credit.textContent =
-            `Crédit photo : ${photoCredit}`;
-
-
-        interviewContent.appendChild(
-            credit
-        );
+        const credit = document.createElement("p");
+        credit.className = "photo-credit";
+        credit.textContent = `Crédit photo : ${photoCredit}`;
+        interviewContent.appendChild(credit);
     }
-
-
-    /* =====================================================
-       RESSOURCES
-    ===================================================== */
 
     if (addedInfos) {
-
-        const resources =
-            document.createElement("div");
-
-
-        resources.className =
-            "detail-resources";
-
-
+        const resources = document.createElement("div");
+        resources.className = "detail-resources";
         resources.innerHTML = `
-            <h2 class="detail-resources-title">
-                Pour aller plus loin
-            </h2>
-
-            <div>
-                ${escapeHTML(addedInfos)}
-            </div>
+            <h2 class="detail-resources-title">Pour aller plus loin</h2>
+            <div>${escapeHTML(addedInfos)}</div>
         `;
-
-
-        interviewContent.appendChild(
-            resources
-        );
+        interviewContent.appendChild(resources);
     }
 
+    detailContent.appendChild(interviewContent);
 
-    detailContent.appendChild(
-        interviewContent
-    );
+    gallery.hidden = false;
+    detail.hidden = false;
 
-
-    /* =====================================================
-       AFFICHAGE DE LA SIDEBAR
-    ===================================================== */
-
-    gallery.hidden =
-        false;
-
-
-    detail.hidden =
-        false;
-
-
-    document.body.classList.add(
-        "detail-open"
-    );
-
-
-    window.scrollTo({
-        top: 0,
-        behavior: "smooth"
-    });
+    document.body.classList.add("detail-open");
+    window.scrollTo({ top: 0, behavior: "smooth" });
 }
 
 
 /* =========================================================
-   9. AJOUTER UNE SECTION D'INTERVIEW
+   10. AJOUTER UNE SECTION D'INTERVIEW
 ========================================================= */
 
-function ajouterSectionInterview(
-    container,
-    titre,
-    texte
-) {
+function ajouterSectionInterview(container, titre, texte) {
+    if (texte === null || texte === undefined || String(texte).trim() === "") return;
 
-    if (
-        texte === null ||
-        texte === undefined ||
-        String(texte).trim() === ""
-    ) {
+    const section = document.createElement("section");
+    section.className = "interview-section";
 
-        return;
-    }
+    const title = document.createElement("h2");
+    title.className = "interview-section-title";
+    title.textContent = titre;
 
+    const paragraph = document.createElement("p");
+    paragraph.className = "interview-text";
+    paragraph.innerHTML = formatText(texte);
 
-    const section =
-        document.createElement("section");
-
-
-    section.className =
-        "interview-section";
-
-
-    const title =
-        document.createElement("h2");
-
-
-    title.className =
-        "interview-section-title";
-
-
-    title.textContent =
-        titre;
-
-
-    const paragraph =
-        document.createElement("p");
-
-
-    paragraph.className =
-        "interview-text";
-
-
-    paragraph.innerHTML =
-        formatText(texte);
-
-
-    section.appendChild(
-        title
-    );
-
-
-    section.appendChild(
-        paragraph
-    );
-
-
-    container.appendChild(
-        section
-    );
+    section.appendChild(title);
+    section.appendChild(paragraph);
+    container.appendChild(section);
 }
 
 
 /* =========================================================
-   10. RETOUR À LA GALERIE
+   11. RETOUR À LA GALERIE
 ========================================================= */
 
 function revenirGalerie() {
+    const gallery = document.getElementById("gallery");
+    const detail = document.getElementById("detail");
 
-    const gallery =
-        document.getElementById("gallery");
+    if (!gallery || !detail) return;
 
+    detail.hidden = true;
+    gallery.hidden = false;
 
-    const detail =
-        document.getElementById("detail");
-
-
-    if (
-        !gallery ||
-        !detail
-    ) {
-
-        return;
-    }
-
-
-    detail.hidden =
-        true;
-
-
-    gallery.hidden =
-        false;
-
-
-    document.body.classList.remove(
-        "detail-open"
-    );
-
-
-    window.scrollTo({
-        top: 0,
-        behavior: "smooth"
-    });
+    document.body.classList.remove("detail-open");
+    window.scrollTo({ top: 0, behavior: "smooth" });
 }
 
 
 /* =========================================================
-   11. FERMER LA SIDEBAR AVEC ESC
+   12. ÉCOUTEURS D'ÉVÉNEMENTS (BOUTONS, RECHERCHE, ESC)
 ========================================================= */
 
-document.addEventListener(
-    "keydown",
-    event => {
-
-        if (
-            event.key === "Escape"
-        ) {
-
-            const detail =
-                document.getElementById(
-                    "detail"
-                );
-
-
-            if (
-                detail &&
-                !detail.hidden
-            ) {
-
-                revenirGalerie();
-            }
-        }
+document.addEventListener("keydown", event => {
+    if (event.key === "Escape") {
+        const detail = document.getElementById("detail");
+        if (detail && !detail.hidden) revenirGalerie();
     }
-);
+});
 
-
-/* =========================================================
-   12. BOUTON RETOUR
-========================================================= */
-
-document.addEventListener(
-    "DOMContentLoaded",
-    () => {
-
-        const backButton =
-            document.getElementById(
-                "back-button"
-            );
-
-
-        if (backButton) {
-
-            backButton.addEventListener(
-                "click",
-                revenirGalerie
-            );
-        }
-
+document.addEventListener("DOMContentLoaded", () => {
+    // Bouton Retour
+    const backButton = document.getElementById("back-button");
+    if (backButton) {
+        backButton.addEventListener("click", revenirGalerie);
     }
-);
 
+    // Écouteur de recherche textuelle
+    const searchInput = document.getElementById("searchInput");
+    if (searchInput) {
+        searchInput.addEventListener("input", filtrerEtAfficher);
+    }
 
-/* =========================================================
-   13. LANCEMENT
-========================================================= */
+    // Écouteurs des boutons de catégories
+    const filterButtons = document.querySelectorAll(".filter-btn");
+    filterButtons.forEach(btn => {
+        btn.addEventListener("click", (e) => {
+            filterButtons.forEach(b => b.classList.remove("active"));
+            e.currentTarget.classList.add("active");
+            filtrerEtAfficher();
+        });
+    });
 
-document.addEventListener(
-    "DOMContentLoaded",
-    chargerPortraits
-);
+    // Lancement de la récupération
+    chargerPortraits();
+});
