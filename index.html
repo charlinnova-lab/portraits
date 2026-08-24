@@ -2,78 +2,61 @@
 <html lang="fr">
 
 <head>
-
     <meta charset="UTF-8">
-
-    <meta
-        name="viewport"
-        content="width=device-width, initial-scale=1.0"
-    >
-
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Portraits — L'innovation, une histoire collective</title>
-
-    <link
-        rel="stylesheet"
-        href="style.css"
-    >
-
+    <link rel="stylesheet" href="style.css">
 </head>
-
 
 <body>
 
     <main>
 
         <!-- =================================================
+             BARRE DE RECHERCHE & FILTRES DE CATÉGORIES
+        ================================================== -->
+        <section id="filters-section">
+            <div class="search-box">
+                <input type="text" id="searchInput" placeholder="Rechercher un nom, un projet, un mot-clé…">
+            </div>
+
+            <div class="filter-buttons">
+                <button class="filter-btn active" data-filter="all">Tous</button>
+                <button class="filter-btn" data-filter="germe">01. Idées germent</button>
+                <button class="filter-btn" data-filter="grandit">02. Idée grandit</button>
+                <button class="filter-btn" data-filter="forme">03. Idée prend forme</button>
+                <button class="filter-btn" data-filter="solution">04. Idée devient solution</button>
+                <button class="filter-btn" data-filter="deploie">05. Idée se déploie</button>
+            </div>
+        </section>
+
+
+        <!-- =================================================
              GALERIE DES PORTRAITS
         ================================================== -->
-
         <section id="gallery">
-
             <div class="loading">
                 Chargement des portraits…
             </div>
-
         </section>
 
 
         <!-- =================================================
              FICHE DÉTAILLÉE
-             
-             Cette section est cachée au démarrage.
-             Elle apparaît lorsqu'un visiteur clique
-             sur une carte.
         ================================================== -->
-
-        <section
-            id="detail"
-            class="detail-view"
-            hidden
-        >
-
-            <button
-                id="back-button"
-                class="back-button"
-                type="button"
-            >
+        <section id="detail" class="detail-view" hidden>
+            <button id="back-button" class="back-button" type="button">
                 ← Retour aux portraits
             </button>
 
-
             <div id="detail-content">
-
-                <!-- Le contenu de l'interview sera créé
-                     automatiquement par JavaScript -->
-
+                <!-- Le contenu de l'interview sera créé automatiquement par JavaScript -->
             </div>
-
         </section>
 
     </main>
 
-
     <script src="script.js"></script>
 
 </body>
-
 </html>
