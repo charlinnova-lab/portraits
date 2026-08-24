@@ -34,7 +34,6 @@
             align-items: center;
         }
 
-        /* Ligne du parcours */
         .idea-journey-path::before {
             content: "";
             position: absolute;
@@ -47,7 +46,6 @@
             z-index: 0;
         }
 
-        /* Chaque étape */
         .idea-step {
             position: relative;
             z-index: 1;
@@ -111,7 +109,6 @@
             transform: translate(3px, -3px);
         }
 
-        /* Mobile */
         @media (max-width: 600px) {
             .idea-journey-path {
                 grid-template-columns: repeat(2, 1fr);
@@ -211,39 +208,39 @@
     </section>
 
     <script>
-        const API_URL = "https://portraitsexpo.charlottepiau-innova.workers.dev";
+        const API_URL = "https://portaitsexpo.charlottepiau-innova.workers.dev";
 
         async function updateCategoryCounts() {
             try {
                 const response = await fetch(API_URL);
                 const data = await response.json();
+                
+                // Extrait les enregistrements peu importe le format de réponse
                 const items = data.records || (Array.isArray(data) ? data : []);
 
                 const counts = { germe: 0, grandit: 0, forme: 0, solution: 0, deploie: 0 };
 
                 items.forEach(item => {
                     const fields = item.fields || item;
-                    let rawCategory = fields.Category || fields.category || "";
+                    
+                    // Récupère la catégorie sur toutes les variantes de nommage possibles
+                    let rawCategory = fields["Category"] || fields["Catégory"] || fields["category"] || fields["Catégorie"] || "";
                     if (Array.isArray(rawCategory)) rawCategory = rawCategory.join(" ");
-                    const category = rawCategory.toLowerCase();
+                    const category = String(rawCategory).toLowerCase();
 
-                    if (category.includes("germent") || category.includes("ecoles") || category.includes("écoles")) counts.germe++;
+                    if (category.includes("germent") || category.includes("ecoles") || category.includes("écoles") || category.includes("germe")) counts.germe++;
                     else if (category.includes("grandit") || category.includes("centres techniques")) counts.grandit++;
-                    else if (category.includes("start-up") || category.includes("startup")) counts.forme++;
+                    else if (category.includes("start-up") || category.includes("startup") || category.includes("forme")) counts.forme++;
                     else if (category.includes("solution") || category.includes("entreprises")) counts.solution++;
-                    else if (category.includes("deplo") || category.includes("dynamiques collectives")) counts.deploie++;
+                    else if (category.includes("deploie") || category.includes("déploie") || category.includes("dynamiques collectives")) counts.deploie++;
                 });
 
+                // Mettre à jour l'affichage des chiffres
                 document.querySelectorAll('.idea-step').forEach(step => {
                     const catKey = step.getAttribute('data-category');
                     if (catKey && counts[catKey] !== undefined) {
                         const countEl = step.querySelector('.count-value');
                         if (countEl) countEl.textContent = counts[catKey];
-                        
-                        // Transmet l'ordre de filtrage au parent WordPress
-                        step.addEventListener('click', () => {
-                            window.parent.postMessage({ type: 'FILTER_GALLERY', category: catKey }, '*');
-                        });
                     }
                 });
 
@@ -252,7 +249,19 @@
             }
         }
 
-        document.addEventListener("DOMContentLoaded", updateCategoryCounts);
+        // Lier l'événement de clic de manière indépendante pour garantir la transmission
+        document.addEventListener("DOMContentLoaded", () => {
+            updateCategoryCounts();
+
+            document.querySelectorAll('.idea-step').forEach(step => {
+                step.addEventListener('click', () => {
+                    const catKey = step.getAttribute('data-category');
+                    if (catKey) {
+                        window.parent.postMessage({ type: 'FILTER_GALLERY', category: catKey }, '*');
+                    }
+                });
+            });
+        });
     </script>
 </body>
 </html>
