@@ -126,7 +126,9 @@ main {
 
 .portrait-content {
 
-    padding: 24px;
+    position: relative;
+
+    padding-bottom: 55px;
 }
 
 
@@ -164,13 +166,11 @@ main {
 
 .card-arrow {
 
-    display: block;
+    position: absolute;
 
-    margin-top: auto;
+    right: 24px;
 
-    margin-left: auto;
-
-    padding-top: 20px;
+    bottom: 20px;
 
     font-size: 24px;
 
