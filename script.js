@@ -399,50 +399,25 @@ function revenirGalerie() {
 }
 
 /* =========================================================
-   12. ÉCOUTEURS D'ÉVÉNEMENTS
+   ÉCOUTE DU MESSAGE PROVENANT DE LA FRISE VIA WORDPRESS
 ========================================================= */
 
-document.addEventListener("keydown", event => {
-    if (event.key === "Escape") {
-        const detail = document.getElementById("detail");
-        if (detail && !detail.hidden) revenirGalerie();
-    }
-});
-
-document.addEventListener("DOMContentLoaded", () => {
-    const backButton = document.getElementById("back-button");
-    if (backButton) {
-        backButton.addEventListener("click", revenirGalerie);
-    }
-
-    const searchInput = document.getElementById("searchInput");
-    if (searchInput) {
-        searchInput.addEventListener("input", filtrerEtAfficher);
-    }
-
-    const filterButtons = document.querySelectorAll(".filter-btn");
-    filterButtons.forEach(btn => {
-        btn.addEventListener("click", (e) => {
-            filterButtons.forEach(b => b.classList.remove("active"));
-            e.currentTarget.classList.add("active");
-            filtrerEtAfficher();
-        });
-    });
-
-   // Écoute les messages envoyés par la frise via la page parente
 window.addEventListener('message', (event) => {
     if (event.data && event.data.type === 'FILTER_GALLERY') {
         const catKey = event.data.category;
+        
+        // Sélectionne le bouton de filtre correspondant
         const targetBtn = document.querySelector(`.filter-btn[data-filter="${catKey}"]`);
         
         if (targetBtn) {
-            targetBtn.click(); // Simule le clic sur le bon filtre
+            // Désactive les autres boutons et active le bon
+            document.querySelectorAll(".filter-btn").forEach(btn => btn.classList.remove("active"));
+            targetBtn.classList.add("active");
             
-            // Fait défiler la page WordPress jusqu'à la galerie
-            window.frameElement?.scrollIntoView({ behavior: 'smooth' });
+            // Relance le filtrage
+            if (typeof filtrerEtAfficher === 'function') {
+                filtrerEtAfficher();
+            }
         }
     }
-});
-
-    chargerPortraits();
 });
