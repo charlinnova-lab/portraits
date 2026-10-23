@@ -12,18 +12,16 @@
         body {
             margin: 0;
             padding: 0;
-            background: #f8fafc;
+            background: transparent;
         }
 
         .idea-journey {
             font-family: Arial, Helvetica, sans-serif;
-            padding: 40px 30px;
-            background: #f8fafc; /* Fond gris-bleu demandé */
-            border: 1px solid #e2e8f0;
-            border-radius: 16px;
+            padding: 10px 0;
+            background: transparent;
+            border: none;
             max-width: 1200px;
-            margin: 40px auto;
-            box-shadow: 0 4px 15px rgba(43, 58, 130, 0.04);
+            margin: 0 auto;
         }
 
         .idea-journey-inner {
@@ -58,10 +56,11 @@
         .idea-step {
             position: relative;
             z-index: 1;
-            width: 200px;
-            height: 200px;
+            width: 100%;
+            max-width: 200px;
+            aspect-ratio: 1 / 1;
             border-radius: 50%;
-            padding: 22px 16px;
+            padding: 8% 6%;
             display: flex;
             flex-direction: column;
             justify-content: space-between;
@@ -97,7 +96,7 @@
 
         /* Nom de l'étape mis en valeur au centre */
         .idea-name {
-            font-size: 22px;
+            font-size: clamp(15px, 2vw, 22px);
             font-weight: 900;
             line-height: 1.15;
             letter-spacing: -.02em;
@@ -131,7 +130,7 @@
         }
 
         /* Mobile */
-        @media (max-width: 1050px) {
+        @media (max-width: 760px) {
             .idea-journey-path {
                 grid-template-columns: repeat(2, 1fr);
                 gap: 25px;
