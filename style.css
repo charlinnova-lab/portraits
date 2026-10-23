@@ -17,7 +17,9 @@
 html {
     scroll-behavior: smooth;
 }
-
+main {
+    background: #f8fafc !important;
+}
 body {
     margin: 0;
     padding: 0;
