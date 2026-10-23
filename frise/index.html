@@ -5,9 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Le parcours d'une idée</title>
     <style>
-        * {
-            box-sizing: border-box;
-        }
+        * { box-sizing: border-box; }
 
         body {
             margin: 0;
@@ -21,21 +19,16 @@
             background: #f8fafc;
             border: 1px solid #e2e8f0;
             border-radius: 16px;
-            max-width: 1100px;
+            max-width: 1200px;
             margin: 40px auto;
             box-shadow: 0 4px 15px rgba(43, 58, 130, 0.04);
-        }
-
-        .idea-journey-inner {
-            max-width: 100%;
-            margin: auto;
         }
 
         .idea-journey-path {
             position: relative;
             display: grid;
             grid-template-columns: repeat(5, 1fr);
-            gap: 20px;
+            gap: 12px;
             align-items: center;
             justify-items: center;
         }
@@ -54,20 +47,20 @@
             transform: translateY(-50%);
         }
 
-        /* Cercles agrandis pour accueillir les gros textes */
         .idea-step {
             position: relative;
             z-index: 1;
-            width: 185px;
-            height: 185px;
+            width: 200px;
+            height: 200px;
             border-radius: 50%;
-            padding: 22px 14px;
+            padding: 24px 10px;
             display: flex;
             flex-direction: column;
             justify-content: space-between;
             align-items: center;
             text-align: center;
             color: #171717;
+            text-decoration: none;
             transition: transform .3s ease, box-shadow .3s ease;
             cursor: pointer;
             box-shadow: 0 6px 20px rgba(0,0,0,.07);
@@ -90,42 +83,45 @@
         .idea-step:nth-child(5):hover { transform: translateY(-10px) scale(1.03); }
 
         .idea-number {
-            font-size: 11px;
+            font-size: 12px !important;
             font-weight: 800;
             opacity: .65;
-            letter-spacing: 0.5px;
+            letter-spacing: .5px;
         }
 
-        /* TITRE PLUS GROS ET SUR 2 LIGNES */
+        /* TITRE : 2 lignes (L'idée / verbe), gros */
         .idea-name {
-            font-size: clamp(15px, 1.4vw, 18px);
+            font-size: 22px !important;
             font-weight: 900;
-            line-height: 1.15;
-            letter-spacing: -.025em;
-            text-transform: none;
+            line-height: 1.15 !important;
+            letter-spacing: -.02em;
             padding: 0 4px;
         }
 
-        /* Nombre de portraits en dessous */
-        .idea-count-wrapper {
-            font-size: 10.5px;
-            font-weight: 800;
-            opacity: 0.85;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
+        .idea-name .line {
+            display: block !important;
         }
 
-        .count-value {
-            font-weight: 900 !important;
+        .idea-name .verb {
+            font-size: 21px !important;
+        }
+
+        .idea-count-wrapper {
+            font-size: 11px !important;
+            font-weight: 800;
+            opacity: .85;
+            text-transform: uppercase;
+            letter-spacing: .05em;
+            margin-bottom: 4px;
         }
 
         .idea-arrow {
             position: absolute;
-            bottom: 14px;
-            right: 20px;
-            font-size: 13px;
+            bottom: 18px;
+            right: 26px;
+            font-size: 14px;
             transition: transform .2s ease;
-            opacity: 0.75;
+            opacity: .75;
         }
 
         .idea-step:hover .idea-arrow {
@@ -133,33 +129,19 @@
             opacity: 1;
         }
 
-        /* Mobile */
-        @media (max-width: 950px) {
+        /* Tablette / mobile */
+        @media (max-width: 1050px) {
             .idea-journey-path {
                 grid-template-columns: repeat(2, 1fr);
                 gap: 25px;
             }
-            .idea-journey-path::before {
-                display: none;
-            }
-            .idea-step:nth-child(2),
-            .idea-step:nth-child(3),
-            .idea-step:nth-child(4),
-            .idea-step:nth-child(5) {
-                transform: none;
-            }
-            .idea-step:nth-child(2):hover,
-            .idea-step:nth-child(3):hover,
-            .idea-step:nth-child(4):hover,
-            .idea-step:nth-child(5):hover {
-                transform: translateY(-6px) scale(1.03);
-            }
+            .idea-journey-path::before { display: none; }
+            .idea-step:nth-child(n) { transform: none; }
+            .idea-step:nth-child(n):hover { transform: translateY(-6px) scale(1.03); }
         }
 
         @media (max-width: 500px) {
-            .idea-journey-path {
-                grid-template-columns: 1fr;
-            }
+            .idea-journey-path { grid-template-columns: 1fr; }
         }
     </style>
 </head>
@@ -167,11 +149,66 @@
 
     <section class="idea-journey">
         <div class="idea-journey-inner">
-
             <div class="idea-journey-path">
 
                 <!-- 01 : GERME -->
                 <div class="idea-step" style="background:#FB6F92;" data-category="germe">
                     <div class="idea-number">01</div>
                     <div class="idea-name">
-                        L
+                        <span class="line">L'idée</span>
+                        <span class="line verb">germe</span>
+                    </div>
+                    <div class="idea-count-wrapper"><span class="count-value">9</span> portraits</div>
+                    <span class="idea-arrow">↗</span>
+                </div>
+
+                <!-- 02 : GRANDIT -->
+                <div class="idea-step" style="background:#FFC400;" data-category="grandit">
+                    <div class="idea-number">02</div>
+                    <div class="idea-name">
+                        <span class="line">L'idée</span>
+                        <span class="line verb">grandit</span>
+                    </div>
+                    <div class="idea-count-wrapper"><span class="count-value">8</span> portraits</div>
+                    <span class="idea-arrow">↗</span>
+                </div>
+
+                <!-- 03 : PREND FORME -->
+                <div class="idea-step" style="background:#9DBF45;" data-category="prend-forme">
+                    <div class="idea-number">03</div>
+                    <div class="idea-name">
+                        <span class="line">L'idée</span>
+                        <span class="line verb">prend forme</span>
+                    </div>
+                    <div class="idea-count-wrapper"><span class="count-value">9</span> portraits</div>
+                    <span class="idea-arrow">↗</span>
+                </div>
+
+                <!-- 04 : DEVIENT SOLUTION -->
+                <div class="idea-step" style="background:#22C0F5;" data-category="solution">
+                    <div class="idea-number">04</div>
+                    <div class="idea-name">
+                        <span class="line">L'idée</span>
+                        <span class="line verb">devient solution</span>
+                    </div>
+                    <div class="idea-count-wrapper"><span class="count-value">6</span> portraits</div>
+                    <span class="idea-arrow">↗</span>
+                </div>
+
+                <!-- 05 : SE DEPLOIE -->
+                <div class="idea-step" style="background:#E8883B;" data-category="deploie">
+                    <div class="idea-number">05</div>
+                    <div class="idea-name">
+                        <span class="line">L'idée</span>
+                        <span class="line verb">se déploie</span>
+                    </div>
+                    <div class="idea-count-wrapper"><span class="count-value">7</span> portraits</div>
+                    <span class="idea-arrow">↗</span>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+</body>
+</html>
