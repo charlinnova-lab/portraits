@@ -240,6 +240,30 @@
     <script>
         const API_URL = "https://portaitsexpo.charlottepiau-innova.workers.dev";
 
+        // Envoie le filtre à la galerie, que la frise et la galerie soient
+        // deux iframes côte à côte sur la même page, ou deux pages séparées.
+        function envoyerFiltre(catKey) {
+            const message = { type: 'FILTER_GALLERY', category: catKey };
+
+            // Cas 1 : la frise est seule dans sa page -> on ouvre la galerie filtrée
+            if (window.parent === window) {
+                window.location.href = "../?cat=" + encodeURIComponent(catKey);
+                return;
+            }
+
+            // Cas 2 : iframes côte à côte -> on envoie le message à toutes les
+            // autres iframes de la page (dont la galerie)
+            const frames = window.parent.frames;
+            for (let i = 0; i < frames.length; i++) {
+                if (frames[i] !== window) {
+                    try { frames[i].postMessage(message, '*'); } catch (e) {}
+                }
+            }
+
+            // Cas 3 : on prévient aussi la page parente (utile si elle relaie le message)
+            window.parent.postMessage(message, '*');
+        }
+
         async function updateCategoryCounts() {
             try {
                 const response = await fetch(API_URL);
@@ -293,7 +317,7 @@
                 step.addEventListener('click', () => {
                     const catKey = step.getAttribute('data-category');
                     if (catKey) {
-                        window.parent.postMessage({ type: 'FILTER_GALLERY', category: catKey }, '*');
+                        envoyerFiltre(catKey);
                     }
                 });
             });
