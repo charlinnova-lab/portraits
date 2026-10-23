@@ -5,7 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Le parcours d'une idée</title>
     <style>
-        * { box-sizing: border-box; }
+        * {
+            box-sizing: border-box;
+        }
 
         body {
             margin: 0;
@@ -14,14 +16,19 @@
         }
 
         .idea-journey {
-            font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
-            padding: 40px 20px;
-            background: #f8fafc;
+            font-family: Arial, Helvetica, sans-serif;
+            padding: 40px 30px;
+            background: #f8fafc; /* Fond gris-bleu demandé */
             border: 1px solid #e2e8f0;
             border-radius: 16px;
             max-width: 1200px;
             margin: 40px auto;
             box-shadow: 0 4px 15px rgba(43, 58, 130, 0.04);
+        }
+
+        .idea-journey-inner {
+            max-width: 100%;
+            margin: auto;
         }
 
         .idea-journey-path {
@@ -33,7 +40,7 @@
             justify-items: center;
         }
 
-        /* Ligne de fond qui relie les cercles */
+        /* Ligne de fond du parcours qui relie les cercles */
         .idea-journey-path::before {
             content: "";
             position: absolute;
@@ -41,29 +48,29 @@
             right: 8%;
             top: 50%;
             height: 3px;
-            background: #2b3a82;
+            background: #171717;
             opacity: .15;
             z-index: 0;
             transform: translateY(-50%);
         }
 
+        /* Cartes d'étapes en format circulaire */
         .idea-step {
             position: relative;
             z-index: 1;
             width: 200px;
             height: 200px;
             border-radius: 50%;
-            padding: 24px 10px;
+            padding: 22px 16px;
             display: flex;
             flex-direction: column;
             justify-content: space-between;
             align-items: center;
             text-align: center;
             color: #171717;
-            text-decoration: none;
             transition: transform .3s ease, box-shadow .3s ease;
             cursor: pointer;
-            box-shadow: 0 6px 20px rgba(0,0,0,.07);
+            box-shadow: 0 4px 15px rgba(0,0,0,.06);
         }
 
         .idea-step:hover {
@@ -71,7 +78,7 @@
             box-shadow: 0 12px 30px rgba(0,0,0,.15);
         }
 
-        /* Alternance de hauteur */
+        /* Effet d'alternance subtil en hauteur sur les cercles */
         .idea-step:nth-child(2) { transform: translateY(12px); }
         .idea-step:nth-child(3) { transform: translateY(-4px); }
         .idea-step:nth-child(4) { transform: translateY(12px); }
@@ -83,65 +90,73 @@
         .idea-step:nth-child(5):hover { transform: translateY(-10px) scale(1.03); }
 
         .idea-number {
-            font-size: 12px !important;
+            font-size: 12px;
             font-weight: 800;
-            opacity: .65;
-            letter-spacing: .5px;
+            opacity: .6;
         }
 
-        /* TITRE : 2 lignes (L'idée / verbe), gros */
+        /* Nom de l'étape mis en valeur au centre */
         .idea-name {
-            font-size: 22px !important;
+            font-size: 22px;
             font-weight: 900;
-            line-height: 1.15 !important;
+            line-height: 1.15;
             letter-spacing: -.02em;
             padding: 0 4px;
         }
 
-        .idea-name .line {
-            display: block !important;
-        }
-
-        .idea-name .verb {
-            font-size: 21px !important;
-        }
-
+        /* Bloc compteur en dessous, plus discret */
         .idea-count-wrapper {
-            font-size: 11px !important;
+            font-size: 11px;
             font-weight: 800;
-            opacity: .85;
+            opacity: 0.85;
             text-transform: uppercase;
-            letter-spacing: .05em;
-            margin-bottom: 4px;
+            letter-spacing: 0.05em;
+        }
+
+        .count-value {
+            font-weight: 900 !important;
         }
 
         .idea-arrow {
             position: absolute;
-            bottom: 18px;
-            right: 26px;
+            bottom: 14px;
+            right: 20px;
             font-size: 14px;
             transition: transform .2s ease;
-            opacity: .75;
+            opacity: 0.8;
         }
 
         .idea-step:hover .idea-arrow {
             transform: translate(3px, -3px);
-            opacity: 1;
         }
 
-        /* Tablette / mobile */
+        /* Mobile */
         @media (max-width: 1050px) {
             .idea-journey-path {
                 grid-template-columns: repeat(2, 1fr);
                 gap: 25px;
             }
-            .idea-journey-path::before { display: none; }
-            .idea-step:nth-child(n) { transform: none; }
-            .idea-step:nth-child(n):hover { transform: translateY(-6px) scale(1.03); }
+            .idea-journey-path::before {
+                display: none;
+            }
+            .idea-step:nth-child(2),
+            .idea-step:nth-child(3),
+            .idea-step:nth-child(4),
+            .idea-step:nth-child(5) {
+                transform: none;
+            }
+            .idea-step:nth-child(2):hover,
+            .idea-step:nth-child(3):hover,
+            .idea-step:nth-child(4):hover,
+            .idea-step:nth-child(5):hover {
+                transform: translateY(-6px) scale(1.03);
+            }
         }
 
         @media (max-width: 500px) {
-            .idea-journey-path { grid-template-columns: 1fr; }
+            .idea-journey-path {
+                grid-template-columns: 1fr;
+            }
         }
     </style>
 </head>
@@ -149,66 +164,140 @@
 
     <section class="idea-journey">
         <div class="idea-journey-inner">
+
             <div class="idea-journey-path">
 
                 <!-- 01 : GERME -->
                 <div class="idea-step" style="background:#FB6F92;" data-category="germe">
                     <div class="idea-number">01</div>
                     <div class="idea-name">
-                        <span class="line">L'idée</span>
-                        <span class="line verb">germe</span>
+                        L'idée<br>
+                        germe
                     </div>
-                    <div class="idea-count-wrapper"><span class="count-value">9</span> portraits</div>
-                    <span class="idea-arrow">↗</span>
+                    <div class="idea-count-wrapper">
+                        <span class="count-value">-</span> portraits
+                    </div>
+                    <div class="idea-arrow">↗</div>
                 </div>
 
                 <!-- 02 : GRANDIT -->
-                <div class="idea-step" style="background:#FFC400;" data-category="grandit">
+                <div class="idea-step" style="background:#FDC500;" data-category="grandit">
                     <div class="idea-number">02</div>
                     <div class="idea-name">
-                        <span class="line">L'idée</span>
-                        <span class="line verb">grandit</span>
+                        L'idée<br>
+                        grandit
                     </div>
-                    <div class="idea-count-wrapper"><span class="count-value">8</span> portraits</div>
-                    <span class="idea-arrow">↗</span>
+                    <div class="idea-count-wrapper">
+                        <span class="count-value">-</span> portraits
+                    </div>
+                    <div class="idea-arrow">↗</div>
                 </div>
 
-                <!-- 03 : PREND FORME -->
-                <div class="idea-step" style="background:#9DBF45;" data-category="prend-forme">
+                <!-- 03 : FORME -->
+                <div class="idea-step" style="background:#9BC045;" data-category="forme">
                     <div class="idea-number">03</div>
                     <div class="idea-name">
-                        <span class="line">L'idée</span>
-                        <span class="line verb">prend forme</span>
+                        L'idée<br>
+                        prend forme
                     </div>
-                    <div class="idea-count-wrapper"><span class="count-value">9</span> portraits</div>
-                    <span class="idea-arrow">↗</span>
+                    <div class="idea-count-wrapper">
+                        <span class="count-value">-</span> portraits
+                    </div>
+                    <div class="idea-arrow">↗</div>
                 </div>
 
-                <!-- 04 : DEVIENT SOLUTION -->
-                <div class="idea-step" style="background:#22C0F5;" data-category="solution">
+                <!-- 04 : SOLUTION -->
+                <div class="idea-step" style="background:#23C0F1;" data-category="solution">
                     <div class="idea-number">04</div>
                     <div class="idea-name">
-                        <span class="line">L'idée</span>
-                        <span class="line verb">devient solution</span>
+                        L'idée<br>
+                        devient solution
                     </div>
-                    <div class="idea-count-wrapper"><span class="count-value">6</span> portraits</div>
-                    <span class="idea-arrow">↗</span>
+                    <div class="idea-count-wrapper">
+                        <span class="count-value">-</span> portraits
+                    </div>
+                    <div class="idea-arrow">↗</div>
                 </div>
 
-                <!-- 05 : SE DEPLOIE -->
-                <div class="idea-step" style="background:#E8883B;" data-category="deploie">
+                <!-- 05 : DEPLOIE -->
+                <div class="idea-step" style="background:#E8873A;" data-category="deploie">
                     <div class="idea-number">05</div>
                     <div class="idea-name">
-                        <span class="line">L'idée</span>
-                        <span class="line verb">se déploie</span>
+                        L'idée<br>
+                        se déploie
                     </div>
-                    <div class="idea-count-wrapper"><span class="count-value">7</span> portraits</div>
-                    <span class="idea-arrow">↗</span>
+                    <div class="idea-count-wrapper">
+                        <span class="count-value">-</span> portraits
+                    </div>
+                    <div class="idea-arrow">↗</div>
                 </div>
 
             </div>
+
         </div>
     </section>
 
+    <script>
+        const API_URL = "https://portaitsexpo.charlottepiau-innova.workers.dev";
+
+        async function updateCategoryCounts() {
+            try {
+                const response = await fetch(API_URL);
+                const data = await response.json();
+                
+                const items = data.records || (Array.isArray(data) ? data : []);
+                const counts = { germe: 0, grandit: 0, forme: 0, solution: 0, deploie: 0 };
+
+                items.forEach(item => {
+                    const fields = item.fields || item;
+                    
+                    let rawCategory = fields["Category"] || fields["Catégory"] || fields["category"] || fields["Catégorie"] || "";
+                    if (Array.isArray(rawCategory)) rawCategory = rawCategory[0] || "";
+                    
+                    const category = String(rawCategory).trim().toLowerCase();
+
+                    if (category.includes("écoles & laboratoires") || category.includes("ecoles & laboratoires") || category.includes("idées germent")) {
+                        counts.germe++;
+                    }
+                    else if (category.includes("grandit") || category.includes("centres techniques")) {
+                        counts.grandit++;
+                    }
+                    else if (category.includes("prend forme") || category.includes("start-up") || category.includes("startup")) {
+                        counts.forme++;
+                    }
+                    else if (category.includes("transforme en solution") || category.includes("entreprises")) {
+                        counts.solution++;
+                    }
+                    else if (category.includes("déploit") || category.includes("déploie") || category.includes("deploie") || category.includes("dynamiques collectives")) {
+                        counts.deploie++;
+                    }
+                });
+
+                document.querySelectorAll('.idea-step').forEach(step => {
+                    const catKey = step.getAttribute('data-category');
+                    if (catKey && counts[catKey] !== undefined) {
+                        const countEl = step.querySelector('.count-value');
+                        if (countEl) countEl.textContent = counts[catKey];
+                    }
+                });
+
+            } catch (error) {
+                console.error("Erreur lors du calcul des catégories :", error);
+            }
+        }
+
+        document.addEventListener("DOMContentLoaded", () => {
+            updateCategoryCounts();
+
+            document.querySelectorAll('.idea-step').forEach(step => {
+                step.addEventListener('click', () => {
+                    const catKey = step.getAttribute('data-category');
+                    if (catKey) {
+                        window.parent.postMessage({ type: 'FILTER_GALLERY', category: catKey }, '*');
+                    }
+                });
+            });
+        });
+    </script>
 </body>
 </html>
